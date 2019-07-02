@@ -36,7 +36,8 @@ const Config = {
             'bib/i/extensions/share/index',
             'bib/i/extensions/unaccessibilizer/index',
             'bib/i/extensions/unzipper/index',
-            'bib/i/extensions/zine/index'
+            'bib/i/extensions/zine/index',
+            'bib/i/extensions/lunascape/index'
         ],
         "scss": [
             'bib/i/res/styles/bibi',
@@ -47,7 +48,8 @@ const Config = {
         new StringReplacePlugin(),
         new FixStyleOnlyEntriesPlugin({ extensions: ['scss', 'css'] }),
         new MiniCSSExtractPlugin({ filename: '[name].css' }),
-        new BrowserSyncPlugin(require('./bs-config.js'), { reload: true, injectCss: true })
+        new BrowserSyncPlugin(require('./bs-config.js'), { reload: true, injectCss: true }),
+        new CopyPlugin([{ from: 'node_modules/lsld/dist/lsldw.js', to: 'bib/i/extensions/lunascape' }])
     ],//devServer: { compress: true, port: 61673 },
     module: { rules: [] }
 };

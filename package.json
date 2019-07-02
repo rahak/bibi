@@ -69,6 +69,8 @@
     "js-yaml": "^3.13.1",
     "jszip": "^3.2.1",
     "jszip-utils": "0.0.2",
+    "lsdd": "file:dev-bib/i/extensions/lunascape/lsdd-0.9.3.tgz",
+    "lsld": "file:dev-bib/i/extensions/lunascape/lsld-0.4.0.tgz",
     "material-icons": "^0.3.1",
     "native-promise-only": "^0.8.1",
     "polyfill-array-includes": "^2.0.0",

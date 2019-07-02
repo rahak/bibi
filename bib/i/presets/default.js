@@ -78,6 +78,7 @@ Bibi.preset({
 //----------------------------------------------------------------------------------------------------------------------------------------------
 
 "extensions": [
+    { "src": "extensions/lunascape/index.js", "-spell-of-activation-": "lsld" },
     //{ "src": "extensions/analytics/index.js", "tracking-id": "" }, // "tracking-id": Your own Google Analytics tracking id, as "UA-********-*"
     //{ "src": "extensions/share/index.js" },
     //{ "src": "extensions/epubcfi/index.js" },
