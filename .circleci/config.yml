@@ -3,7 +3,6 @@ version: 2.1
 orbs:
   node: circleci/node@1.1.2
 
-
 workflows:
   version: 2
   check_node_version:
@@ -12,8 +11,5 @@ workflows:
 
 jobs:
   print_node_version:
-    executor:
-      name: node/node
-      tag: "latest"
     steps:
-      - run: node -v
+      - node/install-npm
