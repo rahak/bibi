@@ -8,8 +8,7 @@ jobs:
     executor: node/default
     steps: 
       - node/install:
-          parameters:
-            node-version: 12.4.0
+          node-version: 12.4.0
       - run: node -v
 
 workflows:
