@@ -1,0 +1,10 @@
+version: 2.1
+
+orbs:
+  # Declare a dependency on the welcome-orb
+  node: circleci/node@1.1.2
+
+workflows:
+  Welcome:
+    jobs:
+      - node -v
