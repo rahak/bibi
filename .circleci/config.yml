@@ -11,5 +11,5 @@ jobs:
 
 workflows:
   prepare:
-    - jobs:
+    jobs:
       - install-npm
