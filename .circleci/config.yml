@@ -9,9 +9,15 @@ jobs:
     steps: 
       - node/install:
           node-version: 12.4.0
-      - run: node -v
+
+  install:
+    working_directory: ~/pegasus
+    executor: node/default
+    steps:
+        - checkout
 
 workflows:
   build:
     jobs:
       - prepare
+      - install
