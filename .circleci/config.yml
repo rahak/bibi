@@ -4,12 +4,12 @@ orbs:
   node: circleci/node@1.1.2
 
 jobs:
-  install-npm:
+  prepare:
     executor: node/default
     steps: 
-      - run: echo test
+      - node/install-npm
 
 workflows:
-  prepare:
+  build:
     jobs:
-      - install-npm
+      - prepare
