@@ -3,9 +3,7 @@ version: 2.1
 orbs:
   node: circleci/node@1.1.2
 
-workflows:
-  "Test node":
-    jobs:
-      - install-npm:
-        steps: 
-          - run: echo test
+jobs:
+  install-npm:
+    steps: 
+      - run: echo test
