@@ -3,9 +3,6 @@ version: 2.1
 orbs:
   node: circleci/node@1.1.2
 
-executor:
-  name: node/node
-  tag: "latest"
 
 workflows:
   version: 2
@@ -15,5 +12,8 @@ workflows:
 
 jobs:
   print_node_version:
+    executor:
+      name: node/node
+      tag: "latest"
     steps:
       - run: node -v
