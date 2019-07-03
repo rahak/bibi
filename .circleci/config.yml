@@ -35,6 +35,6 @@ workflows:
             - build
           filters:
             tags:
-              only: /^pegasus\/.*/
+              only: /.*/
             branches:
               ignore: /.*/
