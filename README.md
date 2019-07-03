@@ -9,7 +9,8 @@ EPUB Reader on your website.
 Summary
 --------------------------------------------------------------------------------------------------------------------------------
 
-You can publish EPUB books on the web with a permalink for each book, and you can embed it in other webpages (just like a YouTube video).
+You can publish EPUB books on the web, with a permalink for each book.
+And you can embed it in other webpages, just like YouTube videos.
 
 
 
@@ -116,26 +117,26 @@ How to Arrange Development Environment
 ### Requirements
 
 * [Node.js + npm](https://nodejs.org/en/)
-    - [Downloads](https://nodejs.org/en/download/)
     - [Installing Node.js via package manager](https://nodejs.org/en/download/package-manager/).
+    - Or [Downloads](https://nodejs.org/en/download/)
 
 
 
 ### Arrangements
 
 1. Clone [this repository](https://github.com/satorumurmur/bibi/). 
-2. `$ cd <the local repository>`
-3. `$ npm install`
+2. $ `cd <the local repository>`
+3. $ `npm install`
 
 
 
 ### How to Develop
 
-1. `$ npm start` (or `$ npm run develop:watch`)
-    - webpack generates development version of files and watch change.
+1. $ `npm start`
+    - webpack generates development version of files and start to watch changes of the files.
     - BrowserSync webserver launches and navigate your browser to `http://localhost:61671/bib/i/?book=`.
 2. Edit source files.
-    - webpack watches change and updates development version of the file you edited.
+    - webpack watches your modification and updates development version of the file(s) with sourcemaps.
     - BrowserSync reloads your browser(s) or inject changes of CSS.
 
 * SCSS source file(s) of...
@@ -146,23 +147,23 @@ How to Arrange Development Environment
     - `bib/i.js` is `dev-bib/i.js`,
     - the extensions in `bib/i/extensions/` are in `dev-bib/i/extensions/`.
 
-* These files are not processed by gulp tasks:
-    - Index file `bib/i/index.html`
+* These files are not processed by webpack:
+    - Root HTML file of BiB/i: `bib/i/index.html`
     - Preset file in `bib/i/presets/`
-    - Files in `bib/bookshelf/`
+    - Files in `bib/bookshelf/` (this directory contains `.gitkeep`)
 
 
 
 ### How to Build
 
-* `$ npm run build` (or `$ npm run produce`)
+* $ `npm run build`
     - webpack generates production version of files.
 
 
 
-### How to Ditribute
+### How to Make a Ditribution
 
-* `$npm run distribute`
+* $ `npm run distribute`
     1. webpack generates production version of files.
     2. gulp generates zipped archive.
 
@@ -173,10 +174,10 @@ License
 --------------------------------------------------------------------------------------------------------------------------------
 
 
-### [BiB/i](https://bibi.epub.link) ([en](https://github.com/satorumurmur/bibi))
+### BiB/i ([ja](https://bibi.epub.link) / [en](https://github.com/satorumurmur/bibi))
 
 * Copyright &copy; [Satoru MATSUSHIMA](https://string-letters.com) ([@satorumurmur](https://twitter.com/satorumurmur))
-* Licensed under [the MIT license](https://github.com/satorumurmur/bibi/blob/master/LICENSE). - https://opensource.org/licenses/mit-license.php
+* Licensed under [the MIT license](https://github.com/satorumurmur/bibi/blob/master/LICENSE).
 
 
 ### Distribution is including these open source softwares:
@@ -190,12 +191,14 @@ License
     - [JSZipUtils](http://stuk.github.io/jszip-utils) ... Copyright &copy; Stuart Knightley (Dual licensed under [the the MIT license or the GPLv3 license](https://github.com/Stuk/jszip-utils/blob/master/LICENSE.markdown).)
     - [JS-YAML](http://nodeca.github.io/js-yaml/) ... Copyright &copy; Vitaly Puzrin (Licensed under [the MIT license](https://github.com/nodeca/js-yaml/blob/master/LICENSE).)
 * Polyfills (for Internet Explorer):
-    - [Native Promise Only (NPO)](https://www.npmjs.com/package/native-promise-only) ... Copyright &copy; Kyle Simpson (Licensed under [the MIT license](http://getify.mit-license.org/).)
-    - [custom-event-polyfill](https://www.npmjs.com/package/custom-event-polyfill) ... Copyright &copy; Evan Krambuhl (Licensed under [the MIT license](https://github.com/kumarharsh/custom-event-polyfill/blob/master/LICENSE).)
+    - [classlist-polyfill](https://www.npmjs.com/package/classlist-polyfill) ... by Yola Inc. (Released into the public domain under [the Unlicense](https://github.com/yola/classlist-polyfill/blob/master/LICENSE))
+    - [text-encoding-utf-8](https://github.com/arv/text-encoding-utf-8) ... by Erik Arvidsson (Released into the public domain under [the Unlicense](https://github.com/arv/text-encoding-utf-8/blob/master/LICENSE.md).)
     - [document.currentScript Polyfill](https://www.npmjs.com/package/current-script-polyfill) ... Copyright &copy; Adam Miller (Licensed under [the MIT license](https://github.com/amiller-gh/currentScript-polyfill/blob/master/LICENSE).)
+    - [custom-event-polyfill](https://www.npmjs.com/package/custom-event-polyfill) ... Copyright &copy; Evan Krambuhl (Licensed under [the MIT license](https://github.com/kumarharsh/custom-event-polyfill/blob/master/LICENSE).)
+    - [Native Promise Only (NPO)](https://www.npmjs.com/package/native-promise-only) ... Copyright &copy; Kyle Simpson (Licensed under [the MIT license](http://getify.mit-license.org/).)
     - [Polyfill Array.prototype.includes](https://www.npmjs.com/package/polyfill-array-includes) ... Copyright &copy; Kevin Latusinski (Licensed under the MIT license.)
     - [String.prototype.padStart](https://www.npmjs.com/package/string.padstart) ... Copyright &copy; Khaled Al-Ansari (Licensed under [the MIT license](https://github.com/KhaledElAnsari/String.prototype.padStart/blob/master/LICENSE).)
-    - [classlist-polyfill](https://www.npmjs.com/package/classlist-polyfill) ... by Yola Inc. (Released into the public domain under [the Unlicense](https://github.com/yola/classlist-polyfill/blob/master/LICENSE))
+    - [url-polyfill](https://github.com/lifaon74/url-polyfill) ... Copyright &copy; Valentin Richard (Licensed under [the MIT license](https://github.com/lifaon74/url-polyfill/blob/master/LICENSE).)
 
 
 Special Thanks
