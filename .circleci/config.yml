@@ -1,18 +1,34 @@
 version: 2.1
 
+executors:
+  - node12:
+      docker:
+        - image: circleci/node:12.4.0
+      working_directory: ~/pegasus
+
 jobs:
-  distribute:
-    docker:
-      - image: circleci/node:12.4.0
-    working_directory: ~/pegasus
+  build:
+    executor: node12
     steps:
-        - checkout
-        - run: npm install
-        - run: npm run distribute
-        - store_artifacts:
-            path: ./archives
+      - checkout
+      - run: npm install
+      - run: npm run build
+
+  distribute:
+    executor: node12
+    steps:
+      - run: npm install
+      - run: npm run distribute
+      - store_artifacts:
+          path: ./archives
 
 workflows:
   build:
     jobs:
-      - distribute
+      - build
+      - distribute:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /pegasus\/.*/
