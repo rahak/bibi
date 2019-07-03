@@ -20,4 +20,6 @@ workflows:
   build:
     jobs:
       - prepare
-      - install
+      - install:
+          requires: 
+            - prepare
