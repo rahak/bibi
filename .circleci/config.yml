@@ -4,6 +4,7 @@ orbs:
   node: circleci/node@1.1.2
 
 jobs:
+  executor: node
   install-npm:
     steps: 
       - run: echo test
