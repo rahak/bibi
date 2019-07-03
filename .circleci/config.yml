@@ -1,39 +1,16 @@
 version: 2.1
 
-orbs:
-  node: circleci/node@1.1.2
-
 jobs:
-  prepare:
-    executor: node/default
-    steps: 
-      - node/install:
-          node-version: 12.4.0
-
-  install:
-    executor: node/default
+  distribute:
+    docker:
+      - image: circleci/node:12.4
     working_directory: ~/pegasus
     steps:
         - checkout
         - run: npm install
-
-  distribute:
-    executor: node/default
-    working_directory: ~/pegasus
-    steps:
-        - checkout
-        - run: node -v
-        - persist_to_workspace:
-            root: ./
-            paths: ./
+        - run: npm run distribute
 
 workflows:
   build:
     jobs:
-      - prepare
-      - install:
-          requires: 
-            - prepare
-      - distribute:
-          requires:
-            - install
+      - distribute
