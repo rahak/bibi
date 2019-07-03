@@ -23,6 +23,9 @@ jobs:
     steps:
         - checkout
         - run: ls
+        - persist_to_workspace:
+            root: ./
+            paths: ./
 
 workflows:
   build:
