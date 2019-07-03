@@ -7,5 +7,5 @@ workflows:
   "Test node":
     jobs:
       - install-npm:
-          steps: echo test
-
+        steps: 
+          - run: echo test
