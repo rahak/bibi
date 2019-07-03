@@ -8,3 +8,8 @@ jobs:
     executor: node
     steps: 
       - run: echo test
+
+workflows:
+  prepare:
+    - jobs:
+      - install-npm
