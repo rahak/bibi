@@ -6,4 +6,6 @@ orbs:
 workflows:
   "Test node":
     jobs:
-      - node/install-npm
+      - install-npm:
+        steps: echo test
+
