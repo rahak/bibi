@@ -8,8 +8,9 @@ jobs:
     steps:
         - checkout
         - run: npm install
-        - run: ls node_modules
         - run: npm run distribute
+        - store_artifacts:
+            path: ./archives
 
 workflows:
   build:
