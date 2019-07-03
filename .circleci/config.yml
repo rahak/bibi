@@ -31,6 +31,6 @@ workflows:
       - install:
           requires: 
             - prepare
-      - distribute
+      - distribute:
           requires:
             - install
