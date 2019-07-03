@@ -5,7 +5,7 @@ orbs:
 
 jobs:
   install-npm:
-    executor: node
+    executor: node/default
     steps: 
       - run: echo test
 
