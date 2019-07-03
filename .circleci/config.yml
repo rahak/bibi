@@ -11,10 +11,18 @@ jobs:
           node-version: 12.4.0
 
   install:
-    working_directory: ~/pegasus
     executor: node/default
+    working_directory: ~/pegasus
     steps:
         - checkout
+        - run: npm install
+
+  distribute:
+    executor: node/default
+    working_directory: ~/pegasus
+    steps:
+        - checkout
+        - run: ls
 
 workflows:
   build:
@@ -23,3 +31,6 @@ workflows:
       - install:
           requires: 
             - prepare
+      - distribute
+          requires:
+            - install
