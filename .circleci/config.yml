@@ -13,18 +13,12 @@ jobs:
       - checkout
       - run: npm install
       - run: npm run build
-      - store_artifacts:
-          path: ./archives
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
 
   release:
     executor: node12
     steps:
-      - attach_workspace:
-          at: .
+      - checkout
+      - run: npm install
       - run: npm run release
       - store_artifacts:
           path: ./archives
