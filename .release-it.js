@@ -6,6 +6,7 @@ module.exports = {
     git: {
         commit: false,
         tagName: version,
+        requireUpstream: false
     },
     github: {
         release: true,
