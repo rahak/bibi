@@ -520,8 +520,10 @@ L.initializeBook = (Param) => new Promise((resolve, reject) => {
             if(!BookData.name)                               return reject(`Book File Is Invalid.`);
             if(!/\.[\w\d]+$/.test(BookData.name))            return reject(`BiB/i Can Not Open Local Files without Extension.`);
             if(!O.isToBeExtractedIfNecessary(BookData.name)) return reject(`To Open This File, Changing "extract-if-necessary" in default.js Is Required.`);
-            if(/\.epub$/i.test(BookData.name) ? !MIMETypeREs['EPUB'].test(BookData.type) :
-                /\.zip$/i.test(BookData.name) ? !MIMETypeREs['Zine'].test(BookData.type) : true) return reject(MIMETypeErrorMessage);
+            if(BookData.type) {
+                if(/\.epub$/i.test(BookData.name) ? !MIMETypeREs['EPUB'].test(BookData.type) :
+                    /\.zip$/i.test(BookData.name) ? !MIMETypeREs['Zine'].test(BookData.type) : true) return reject(MIMETypeErrorMessage);
+            }
             FileOrData = 'File';
             B.Path = '[Local File] ' + BookData.name;
         } else {
@@ -975,6 +977,7 @@ L.loadItem = (Item, Opt = {}) => { // !!!! Don't Call Directly. Use L.loadSpread
     }
     ItemBox.classList.remove('loaded');
     return new Promise((resolve, reject) => {
+        if(Item.Src) return resolve();
         if(/\.(html?|xht(ml)?|xml)$/i.test(Item.Path)) { // (X)HTML
             //if(!B.ExtractionPolicy) return resolve(); // Extracted
             return O.file(Item, { Preprocess: true }).then(Item => resolve(Item.Content.replace(/^<\?.+?\?>/, ''))).catch(reject); // Archived
@@ -1012,13 +1015,7 @@ L.loadItem = (Item, Opt = {}) => { // !!!! Don't Call Directly. Use L.loadSpread
                 `</html>`
             ].join('');
             HTML = HTML.replace(/(<head(\s[^>]+)?>)/i, `$1<link rel="stylesheet" id="bibi-default-style" href="${ B.DefaultStyle.URI }" />`);
-            const BlobURLAcceptable = !(sML.UA.InternetExplorer || (sML.UA.Edge && !sML.UA.Chromium)); // Legacy Microsoft Browsers accepts any DataURIs for src of <iframe>.
-            if(BlobURLAcceptable) {
-                Item.URI = URL.createObjectURL(new Blob([HTML], { type: 'text/html' })), Item.Content = '';
-                Item.onload = () => resolve(Item);
-                Item.src = Item.URI;
-                ItemBox.insertBefore(Item, ItemBox.firstChild);
-            } else {
+            if(sML.UA.InternetExplorer || (sML.UA.Edge && !sML.UA.Chromium)) { // Legacy Microsoft Browsers do not accept DataURIs for src of <iframe>.
                 HTML = HTML.replace(`</head>`, `<script id="bibi-onload">window.addEventListener('load', function() { parent.R.Items[${ Item.Index }].onLoaded(); return false; });</script></head>`);
                 Item.onLoaded = () => {
                     resolve(Item);
@@ -1032,12 +1029,15 @@ L.loadItem = (Item, Opt = {}) => { // !!!! Don't Call Directly. Use L.loadSpread
                 Item.contentDocument.open();
                 Item.contentDocument.write(HTML);
                 Item.contentDocument.close();
+                return;
+            } else {
+                Item.Src = URL.createObjectURL(new Blob([HTML], { type: 'text/html' })), Item.Content = '';
+                Item.HTML
             }
-        } else {
-            Item.onload = () => resolve(Item);
-            Item.src = O.fullPath(Item.Path);
-            ItemBox.insertBefore(Item, ItemBox.firstChild);
         }
+        Item.onload = () => resolve(Item);
+        Item.src = Item.Src;
+        ItemBox.insertBefore(Item, ItemBox.firstChild);
     })).then(L.postprocessItem).then(() => {
         Item.Loaded = true;
         ItemBox.classList.add('loaded');
