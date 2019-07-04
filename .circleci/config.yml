@@ -15,6 +15,10 @@ jobs:
       - run: npm run build
       - store_artifacts:
           path: ./archives
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
 
   release:
     executor: node12
@@ -24,10 +28,6 @@ jobs:
       - run: npm run release
       - store_artifacts:
           path: ./archives
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
 
 workflows:
   build:
