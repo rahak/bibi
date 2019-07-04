@@ -1,0 +1,41 @@
+version: 2.1
+
+executors:
+  node12:
+    docker:
+      - image: circleci/node:12.4.0
+    working_directory: ~/pegasus
+
+jobs:
+  build:
+    executor: node12
+    steps:
+      - checkout
+      - run: npm install
+      - run: npm run build
+      - store_artifacts:
+          path: ./archives
+
+  release:
+    executor: node12
+    steps:
+      - attach_workspace:
+          at: .
+      - run: npm run release
+      - store_artifacts:
+          path: ./archives
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+workflows:
+  build:
+    jobs:
+      - build
+      - release:
+          requires:
+            - build
+          filters:
+            branches:
+              only: /^release.*/
