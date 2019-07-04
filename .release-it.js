@@ -5,7 +5,7 @@ const artifact = 'archives/' + package.name + '-' + version + '.zip';
 module.exports = {
     git: {
         commit: false,
-        tagName: version,
+        tag: false,
         requireUpstream: false
     },
     github: {
