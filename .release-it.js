@@ -1,5 +1,6 @@
 const package = require('./package.json');
-const artifact = 'archives/' + package.name + '-v' + package.version + '.zip';
+const version = 'v' + package.version;
+const artifact = 'archives/' + package.name + '-' + version + '.zip';	
 
 module.exports = {
     git: {
@@ -7,11 +8,11 @@ module.exports = {
         tag: false,
         requireUpstream: false,
         push: false,
-        tagName: package.version
+        tagName: version
     },
     github: {
         release: true,
-        releaseName: package.version,
+        releaseName: version,
         assets: [artifact],
         releaseNotes: `node -pe "require('fs').readFileSync('CHANGELOG.md', 'utf8').split(/(?:\\n)?\\d+\\.\\d+\\.\\d+(?:(?:-|\\+).*)?\\n-+\\n(?:\\n)?/g)[1]"`,
         tokenRef: 'PEGASUS_CI_GITHUB_TOKEN'
