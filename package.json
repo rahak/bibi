@@ -27,7 +27,7 @@
     "make:distribution": "npm run build && gulp make:distribution",
     "serve": "browser-sync --config bs-config.js",
     "start": "npm run develop+watch",
-    "release": "npm run make:distribution && npx release-it $(npm view pegasus version) --ci"
+    "release": "npm run make:distribution && npx release-it --ci"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",
