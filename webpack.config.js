@@ -170,7 +170,9 @@ module.exports = (env, argv) => {
             //{ from: 'node_modules/@fortawesome/fontawesome-free/LICENSE.txt', to: 'bib/i/res/fonts/fontawesome-free' },
             //{ from: 'node_modules/material-icons/LICENSE',                    to: 'bib/i/res/fonts/material-icons' },
             { from: 'LICENSE',   to: 'bib' },
-            { from: 'README.md', to: 'bib' }
+            { from: 'README.md', to: 'bib' },
+            { from: 'README-pegasus.md', to: 'bib' },
+            { from: 'sample/lenna.epub', to: 'bib/bookshelf' }
         ]));
     } else if(Config.mode === 'development') {
         //Config.plugins.push(new HardSourcePlugin());
