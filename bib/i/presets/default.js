@@ -78,7 +78,6 @@ Bibi.preset({
 //----------------------------------------------------------------------------------------------------------------------------------------------
 
 "extensions": [
-    { "src": "extensions/lunascape/index.js", "-spell-of-activation-": "lsld" },
     //{ "src": "extensions/analytics/index.js", "tracking-id": "" }, // "tracking-id": Your own Google Analytics tracking id, as "UA-********-*"
     //{ "src": "extensions/share/index.js" },
     //{ "src": "extensions/epubcfi/index.js" },
@@ -90,7 +89,7 @@ Bibi.preset({
 //-- Extra
 //----------------------------------------------------------------------------------------------------------------------------------------------
 
-"prioritise-fallbacks"         : true, // true or false (If true, BiB/i uses <item> at the end of the fallback-chain.
+"prioritise-fallbacks"         : false, // true or false (If true, BiB/i uses <item> at the end of the fallback-chain.
 
 "extract-if-necessary"         : [".epub", ".zip"], // File extensions of the book specified in URL, which you want BiB/i to try to extract first. More info is <02> at the bottom of this preset file)
 
