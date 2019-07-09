@@ -49,10 +49,7 @@ Bibi.x({
         LSDD.addHandler(() => {
             I.note(`Error | エラー`, null);
             I.note = () => false;
-            [R.Main, I.Veil].forEach(Ele => {
-                Ele.style.transition = '.111s';
-                Ele.style.opacity = 0;
-            });
+            [R.Main, I.Veil].forEach(Ele => { Ele.style.transition = '.111s', Ele.style.opacity = 0; });
             setTimeout(() => {
                 sML.forEach(O.HTML.querySelectorAll('body>*'))(Ele => { if(Ele != I.Veil && Ele != I.Notifier) O.Body.removeChild(Ele); });
                 R.Main.innerHTML = R.Main.Book.innerHTML = '';
@@ -61,13 +58,11 @@ Bibi.x({
             for(const _ in R) if(/^(on|reset|render|layOut|turn)/.test(_) && typeof R[_] == 'function') R[_] = this.dummy;
             for(const Path in B.Package.Manifest.Items) {
                 const Item = O.item({ Path: Path });
-                URL.revokeObjectURL(Item.URI);
-                URL.revokeObjectURL(Item.Src);
-                URL.revokeObjectURL(Item.src);
-                Item.Path = Item.Content = Item.URI = Item.Src = '';
+                ['URI', 'Src', 'src'].forEach(_ => URL.revokeObjectURL(Item[_]));
+                Item.Path = Item.Content = Item.URI = Item.Src = Item.src = Item.id = '';
                 if(Item.tagName) {
                     if(Item.parentElement) Item.parentElement.removeChild(Item);
-                    Item.src = Item.id = Item.className = Item.style = '';
+                    Item.className = Item.style = '';
                 }
             }
             B.Package.Manifest.Items = B.Package.Spine.Items = R.Items = R.NonLinearItems = R.Spreads = R.Pages = [];
@@ -79,8 +74,7 @@ Bibi.x({
                     'en': `<span>Please Close DevTool</span> <span>and Reload Your Browser.</span>`,
                     'ja': `<span>開発ツールを閉じて</span><span>再読み込みしてください。</span>`
                 });
-                I.Veil.style.transition = '.333s';
-                I.Veil.style.opacity = 1;
+                I.Veil.style.transition = '.333s', I.Veil.style.opacity = 1;
                 Bibi = B = E = I = L = M = P = R = S = U = X = undefined;
                 this.error(`>>>> ${ ByeBye.toUpperCase() } <<<<`);
             }, 333);
