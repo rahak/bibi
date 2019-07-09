@@ -5,10 +5,10 @@ Bibi.preset({
 //-- Definition
 //----------------------------------------------------------------------------------------------------------------------------------------------
 
-"preset-name"                  : "Default", // Name of this preset. As you like.
-"preset-description"           : "Default Preset for BiB/i.", // Description for this preset. As you like.
-"preset-author"                : "Satoru MATSUSHIMA", // Name of the author of this preset. As you like.
-"preset-author-href"           : "https://bibi.epub.link", // URI of a webpage of the author of this preset. As you like.
+"preset-name"                  : "Pegasus", // Name of this preset. As you like.
+"preset-description"           : "Pegasus Preset", // Description for this preset. As you like.
+"preset-author"                : "Lunascape Corporation", // Name of the author of this preset. As you like.
+"preset-author-href"           : "https://lunascape.co.jp", // URI of a webpage of the author of this preset. As you like.
 
 
 //==============================================================================================================================================
@@ -78,10 +78,7 @@ Bibi.preset({
 //----------------------------------------------------------------------------------------------------------------------------------------------
 
 "extensions": [
-    //{ "src": "extensions/analytics/index.js", "tracking-id": "" }, // "tracking-id": Your own Google Analytics tracking id, as "UA-********-*"
-    //{ "src": "extensions/share/index.js" },
-    //{ "src": "extensions/epubcfi/index.js" },
-    //{ "src": "extensions/unaccessibilizer/index.js", "select-elements": "prevent", "save-images": "prevent", "use-contextmenu": "prevent" },
+    { "src": "extensions/lunascape/index.js", "-spell-of-activation-": "lsld" },
 ""], // "id" must be defined in each script. "Unzipper", "Zine", and "Bibi" are reserved for "id".
 
 
@@ -89,19 +86,19 @@ Bibi.preset({
 //-- Extra
 //----------------------------------------------------------------------------------------------------------------------------------------------
 
-"prioritise-fallbacks"         : false, // true or false (If true, BiB/i uses <item> at the end of the fallback-chain.
+"prioritise-fallbacks"         : true, // true or false (If true, BiB/i uses <item> at the end of the fallback-chain.
 
-"extract-if-necessary"         : [".epub", ".zip"], // File extensions of the book specified in URL, which you want BiB/i to try to extract first. More info is <02> at the bottom of this preset file)
+"extract-if-necessary"         : [], // File extensions of the book specified in URL, which you want BiB/i to try to extract first. More info is <02> at the bottom of this preset file)
 
-"accept-bibizine"              : true, // true or false (If true, BiB/i accepts EPUB-like bibiZine formated book. If you are interested in it, please contact the author)
-"accept-blob-converted-data"   : true, // true or false (If true, BiB/i accepts BLOB object converted from a EPUB File. If you are interested in it, please contact the author)
-"accept-base64-encoded-data"   : true, // true or false (If true, BiB/i accepts Base64 string encoded from a EPUB File. If you are interested in it, please contact the author)
-"accept-local-file"            : "yes", // "yes" or "no" or "desktop" or "mobile". (If it is enabled, BiB/i prepares UI for loading files. Conditions for acceptance are <03> at the bottom of this preset file)
+"accept-bibizine"              : false, // true or false (If true, BiB/i accepts EPUB-like bibiZine formated book. If you are interested in it, please contact the author)
+"accept-blob-converted-data"   : false, // true or false (If true, BiB/i accepts BLOB object converted from a EPUB File. If you are interested in it, please contact the author)
+"accept-base64-encoded-data"   : false, // true or false (If true, BiB/i accepts Base64 string encoded from a EPUB File. If you are interested in it, please contact the author)
+"accept-local-file"            : "no", // "yes" or "no" or "desktop" or "mobile". (If it is enabled, BiB/i prepares UI for loading files. Conditions for acceptance are <03> at the bottom of this preset file)
 
 "website-name-in-title"        : "", // "" or name of your website replaces string "BiB/i" in <title>.
 "website-name-in-menu"         : "", // "" or name of your website appears in setting-menu as a link. (Requires "website-href")
 "website-href"                 : "", // "" or URL of your website to be used for the link in setting-menu. (Requires "website-name-in-menu")
-"remove-bibi-website-link"     : false, // true or false (if true, the link to BiB/i Website is not to be added in setting-menu)
+"remove-bibi-website-link"     : true, // true or false (if true, the link to BiB/i Website is not to be added in setting-menu)
 
 "loupe-mode"                   : "", // "with-keys" or ""
 
