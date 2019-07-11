@@ -100,7 +100,7 @@ Bibi.preset({
 "website-href"                 : "", // "" or URL of your website to be used for the link in setting-menu. (Requires "website-name-in-menu")
 "remove-bibi-website-link"     : true, // true or false (if true, the link to BiB/i Website is not to be added in setting-menu)
 
-"loupe-mode"                   : "", // "with-keys" or ""
+"loupe-mode"                   : "pointer-only", // "pointer-only" or "with-keys" or "auto"
 
 "epub-additional-stylesheet"   : "", // Path from spine-item or URI begins with "http(s)://" or ""
 "epub-additional-script"       : "", // Path from spine-item or URI begins with "http(s)://" or ""
