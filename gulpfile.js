@@ -15,7 +15,8 @@ gulp.task('clean:archive', done => { del.sync(Dest + '/' + Dist + '.zip'), done(
 gulp.task('merge:files', () => {
     return gulp.src([
         'bib/*',
-        'bib/i/**/*.*'
+        'bib/i/**/*.*',
+        'bib/bookshelf/*.*'
     ], {
         base: '.'
     })
