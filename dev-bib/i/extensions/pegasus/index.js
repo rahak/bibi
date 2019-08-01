@@ -1,6 +1,6 @@
 /*!
  *
- *  # BiB/i Extension: Lunascape Extension Bundle
+ *  # BiB/i Extension: Pegasus Extension Bundle
  *
  *  * Copyright (c) Lunascape Corporation - https://www.lunascape.co.jp
  *  * All rights reserved.
@@ -16,12 +16,11 @@ import LSLD from 'lsld';
 
 Bibi.x({
 
-    id: 'Lunascape',
+    id: 'Pegasus',
     author: 'Lunascape Corporation',
-    version: '0.7.0',
+    version: '0.8.0',
 
     LSLD: new LSLD({
-        //debug: true,
         url: S['book'],
         key: U['key'] || '',
         worker: document.currentScript.src.replace(/[^\/]+$/, 'lsldw.js')
@@ -84,26 +83,21 @@ Bibi.x({
         this.error = console.error || function(EM) { throw EM; };
     }
 
+    ['select-elements', 'save-images', 'use-contextmenu'].forEach(Par => this[Par] = 'prevent');
     const VPs = ['-webkit-', '-moz-', '-ms-', ''], unaccessibilize = (Item) => {
         if(this['select-elements'] == 'prevent') {
             VPs.forEach(Prefix => {
-                ['user-select', 'user-drag'].forEach(Property => {
-                    Item.Body.style[Prefix + Property] = 'none';
-                });
+                ['user-select', 'user-drag'].forEach(Property => Item.Body.style[Prefix + Property] = 'none');
             });
         }
-        if(this['save-images'] == 'prevent') {
-            sML.forEach(Item.Body.querySelectorAll('img, svg, image'))(Img => {
-                VPs.forEach(Prefix => {
-                    ['user-select', 'user-drag'].forEach(Property => {
-                        Img.style[Prefix + Property] = 'none';
-                    });
-                    if(O.Touch) Img.style[Prefix + 'pointer-events'] = 'none';
-                });
-                Img.draggable = false;
-                Img.addEventListener('contextmenu', O.preventDefault);
+        if(this['save-images'] == 'prevent') sML.forEach(Item.Body.querySelectorAll('img, svg, image'))(Img => {
+            VPs.forEach(Prefix => {
+                ['user-select', 'user-drag'].forEach(Property => Img.style[Prefix + Property] = 'none');
+                if(O.Touch) Img.style[Prefix + 'pointer-events'] = 'none';
             });
-        }
+            Img.draggable = false;
+            Img.addEventListener('contextmenu', O.preventDefault);
+        });
         if(this['use-contextmenu'] == 'prevent') {
             Item.contentDocument.addEventListener('contextmenu', O.preventDefault);
         }
