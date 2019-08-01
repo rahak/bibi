@@ -78,7 +78,7 @@ Bibi.preset({
 //----------------------------------------------------------------------------------------------------------------------------------------------
 
 "extensions": [
-    { "src": "extensions/lunascape/index.js", "-spell-of-activation-": "lsld", "select-elements": "prevent", "save-images": "prevent", "use-contextmenu": "prevent" },
+    { "src": "extensions/pegasus/index.js" },
 ""], // "id" must be defined in each script. "Unzipper", "Zine", and "Bibi" are reserved for "id".
 
 
