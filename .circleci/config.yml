@@ -22,8 +22,6 @@ jobs:
       - run: git push origin v$(node -pe "require('./package.json').version")
       - run: npm install
       - run: npm run release
-      - store_artifacts:
-          path: ./archives
 
 workflows:
   build:
