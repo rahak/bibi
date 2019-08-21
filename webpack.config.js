@@ -154,8 +154,10 @@ module.exports = (env, argv) => {
         const Banners = require('./webpack.config.banners.js');
         for(const N in Banners) if(N) Config.plugins.push(new Webpack.BannerPlugin({ test: new RegExp(N.replace(/([\/\.])/g, '\\$1') + '$'), banner: Banners[N], raw: true }));
         Config.plugins.push(new CopyPlugin([
-            { from: 'LICENSE',   to: 'bib' }/*,
-            { from: 'README.md', to: 'bib' }*/
+            { from: 'LICENSE',   to: 'bib' },
+            { from: 'README.md', to: 'bib' },
+            { from: 'README-pegasus.md', to: 'bib' },
+            { from: 'sample/lenna.epub', to: 'bib/bookshelf' }
         ]));
     } else if(Config.mode === 'development') {
         //Config.plugins.push(new HardSourcePlugin());
