@@ -26,23 +26,19 @@ const Config = {
     performance: { maxEntrypointSize: 1000000, maxAssetSize: 1000000, hints: false  },
     optimization: { minimizer: [] },
     output: { path: __dirname, filename: '[name].js' },
-    entry: ((E, L) => { for(const X in L) L[X].forEach(N => E[N] = __dirname + '/dev-' + N + '.' + X); return E; })({}, {
-        'js': [
-            'bib/i',
-            'bib/i/res/scripts/bibi',
-            'bib/i/res/scripts/bibi.polyfills',
-            'bib/i/extensions/analytics/index',
-            'bib/i/extensions/epubcfi/index',
-            'bib/i/extensions/share/index',
-            'bib/i/extensions/unaccessibilizer/index',
-            'bib/i/extensions/unzipper/index',
-            'bib/i/extensions/zine/index',
-            'bib/i/extensions/pegasus/index'
-        ],
-        'scss': [
-            'bib/i/res/styles/bibi',
-            'bib/i/res/styles/bibi.book'
-        ]
+    entry: (L => { const E = {}; for(const X in L) E[X] = __dirname + '/dev-' + X + '.' + L[X]; return E; })({
+        'bib/i': 'js',
+        'bib/i/res/scripts/bibi': 'js',
+        'bib/i/res/scripts/bibi.polyfills': 'js',
+        'bib/i/extensions/analytics/index': 'js',
+        'bib/i/extensions/epubcfi/index': 'js',
+        'bib/i/extensions/share/index': 'js',
+        'bib/i/extensions/unaccessibilizer/index': 'js',
+        'bib/i/extensions/unzipper/index': 'js',
+        'bib/i/extensions/zine/index': 'js',
+        'bib/i/extensions/pegasus/index': 'js',
+        'bib/i/res/styles/bibi': 'scss',
+        'bib/i/res/styles/bibi.book': 'scss'
     }),
     plugins: [
         new StringReplacePlugin(),
