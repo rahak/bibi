@@ -38,14 +38,13 @@ $ npx serve -r bib
 以下のようにパラメータを指定してブラウザでURLを開くと、コンテンツの表示を確認できます。
 
 ```
-http://<静的サーバのホスト>/i/?lsld&book=<ファイル名>&key=<コンテンツ鍵文字列>
+http://<静的サーバのホスト>/i/?book=<ファイル名>&key=<コンテンツ鍵文字列>
 ```
 
 #### パラメータ
 
 パラメータ名 | 例                                  | 解説 
 ---------- | ----------------------------------- | -----
-lsld       | \<値なし\>                             | 暗号化コンテンツ有効化フラグ
 book       | `lenna.epub`                        | `bib/i/presets/pegasus.js` の `bookshelf` で指定したURLを起点とした相対パス
 key        | `0123456789abcdef0123456789abcdef`  | `bib/i/presets/pegasus.js` の `bookshelf` で指定したURLを起点とした相対パス
 
