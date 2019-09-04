@@ -80,6 +80,15 @@ module.exports = (env, argv) => {
             }]})
         ]
     });
+    Config.module.rules.push({
+        test: /(\/pegasus\/index)\.js$/,
+        use: [
+            StringReplacePlugin.replace({ replacements: [{
+                pattern: /____pegasus-version____/ig,
+                replacement: () => Package.version
+            }]})
+        ]
+    });
     const CommonLoadersForCSS = [
         { loader: 'css-loader', options: {
             url: true,
