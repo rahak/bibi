@@ -1,6 +1,6 @@
 {
   "name": "pegasus",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "author": {
     "name": "Satoru MATSUSHIMA"
   },
@@ -69,8 +69,8 @@
     "js-yaml": "^3.13.1",
     "jszip": "^3.2.2",
     "jszip-utils": "0.1.0",
-    "lsdd": "file:dev-bib/i/extensions/pegasus/lsdd-0.9.3.tgz",
-    "lsld": "file:dev-bib/i/extensions/pegasus/lsld-0.5.0+debug.tgz",
+    "lsdd": "file:dev-bib/i/extensions/pegasus/lsdd-0.9.4.tgz",
+    "lsld": "file:dev-bib/i/extensions/pegasus/lsld-0.6.2.tgz",
     "material-icons": "^0.3.1",
     "native-promise-only": "^0.8.1",
     "polyfill-array-includes": "^2.0.0",
@@ -79,5 +79,9 @@
     "text-encoding-utf-8": "^1.0.2",
     "url-polyfill": "^1.1.7"
   },
-  "private": true
+  "private": true,
+  "bundledDependencies": [
+    "lsld",
+    "lsdd"
+  ]
 }
