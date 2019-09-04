@@ -18,7 +18,7 @@ Bibi.x({
 
     id: 'Pegasus',
     author: 'Lunascape Corporation',
-    version: '0.8.0',
+    version: '____pegasus-version____',
 
     LSLD: new LSLD({
         url: S['book'],
@@ -27,6 +27,9 @@ Bibi.x({
     })
 
 })(function() {
+
+    const Log = `%cBibi: riding %cPegasus %c(v${ this.version })`;
+    if(sML.UA.InternetExplorer || (sML.UA.Edge && !sML.UA.Chromium)) console.log(Log.replace(/%c/g, '')); else console.log(Log, O.log.NStyle, O.log.BStyle, O.log.NStyle);
 
     O.isToBeExtractedIfNecessary = () => true;
 
