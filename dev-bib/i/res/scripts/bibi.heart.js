@@ -894,7 +894,7 @@ L.coordinateLinkages = (BasePath, RootElement, InNav) => {
                     ElementSelector: (HrefHash ? '#' + HrefHash : undefined)
                 };
                 L.coordinateLinkages.setJump(A);
-                return 'break';
+                return 'break'; //// break sML.forEach()
             }
         });
         if(HrefHash && /^epubcfi\(.+\)$/.test(HrefHash)) {
@@ -1674,16 +1674,17 @@ R.layOutStage = () => {
 R.layOut = (Opt) => new Promise((resolve, reject) => {
     // Opt: {
     //     Destination: BibiDestination,
-    //     Reset: Boolean,
-    //     Setting: BibiSetting (Optional),
-    //     before: Function (Optional)
+    //     Reset: Boolean, (default: false)
+    //     DoNotCloseUtilities: Boolean, (default: false)
+    //     Setting: BibiSetting,
+    //     before: Function
     // }
     if(R.LayingOut) return reject();
     R.ScrollHistory = [];
     R.LayingOut = true;
     O.log(`Laying out...`, '<g:>');
     if(Opt) O.log(`Option: %O`, Opt); else Opt = {};
-    E.dispatch('bibi:closes-utilities');
+    if(!Opt.DoNotCloseUtilities) E.dispatch('bibi:closes-utilities');
     E.dispatch('bibi:is-going-to:lay-out', Opt);
     window.removeEventListener(O['resize'], R.onResize);
     R.Main.removeEventListener('scroll', R.onScroll);
@@ -2360,8 +2361,8 @@ I.Menu = { create: () => {
     Menu.addEventListener('click', Eve => Eve.stopPropagation());
     I.setHoverActions(Menu);
     I.setToggleAction(Menu, {
-        onopened: () => O.HTML.classList.add(   'menu-opened') && E.dispatch('bibi:opened-menu'),
-        onclosed: () => O.HTML.classList.remove('menu-opened') && E.dispatch('bibi:closed-menu')
+        onopened: () => { O.HTML.classList.add(   'menu-opened'); E.dispatch('bibi:opened-menu'); },
+        onclosed: () => { O.HTML.classList.remove('menu-opened'); E.dispatch('bibi:closed-menu'); }
     });
     E.add('bibi:commands:open-menu',   Menu.open);
     E.add('bibi:commands:close-menu',  Menu.close);
@@ -2420,8 +2421,8 @@ I.Menu = { create: () => {
         const Menu = I.Menu;
         const Panel = Menu.Panel = O.Body.appendChild(sML.create('div', { id: 'bibi-panel' }));
         I.setToggleAction(Panel, {
-            onopened: () => O.HTML.classList.add(   'panel-opened') && E.dispatch('bibi:opened-panel'),
-            onclosed: () => O.HTML.classList.remove('panel-opened') && E.dispatch('bibi:closed-panel')
+            onopened: () => { O.HTML.classList.add(   'panel-opened'); E.dispatch('bibi:opened-panel'); },
+            onclosed: () => { O.HTML.classList.remove('panel-opened'); E.dispatch('bibi:closed-panel'); }
         });
         E.add('bibi:commands:open-panel',   Panel.open);
         E.add('bibi:commands:close-panel',  Panel.close);
@@ -2443,7 +2444,7 @@ I.Menu = { create: () => {
                 active:  { default: `Close Index`, ja: `目次を閉じる` }
             },
             Help: true,
-            Icon: `<span class="bibi-icon bibi-icon-toggle-panel"><span class="bar-1"></span><span class="bar-2"></span><span class="bar-3"></span></span>`,
+            Icon: `<span class="bibi-icon bibi-icon-toggle-panel">${ (Bars => { for(let i = 1; i <= 6; i++) Bars += '<span></span>'; return Bars; })('') }</span>`,
             action: () => Panel.toggle()
         });
         E.add('bibi:opened-panel', () => I.setUIState(Opener, 'active'            ));
@@ -2490,15 +2491,15 @@ I.Menu = { create: () => {
                     Buttons: [{
                         Mode: 'paged',
                         Labels: { default: { default: `Page Flipping <small>(with ${ O.Touch ? 'Tap/Swipe' : 'Click/Wheel' })</small>`, ja: `ページ単位<small>（${ O.Touch ? 'タップ／スワイプ' : 'クリック／ホイール' }）</small>` } },
-                        Icon: `<span class="bibi-icon bibi-icon-view-paged"><span class="bibi-shape bibi-shape-spreads bibi-shape-spreads-paged">${ SSs }</span></span>`
+                        Icon: `<span class="bibi-icon bibi-icon-view bibi-icon-view-paged"><span class="bibi-shape bibi-shape-spreads bibi-shape-spreads-paged">${ SSs }</span></span>`
                     }, {
                         Mode: 'horizontal',
                         Labels: { default: { default: `Horizontal Scroll`, ja: `横スクロール` } },
-                        Icon: `<span class="bibi-icon bibi-icon-view-horizontal"><span class="bibi-shape bibi-shape-spreads bibi-shape-spreads-horizontal">${ SSs }</span></span>`
+                        Icon: `<span class="bibi-icon bibi-icon-view bibi-icon-view-horizontal"><span class="bibi-shape bibi-shape-spreads bibi-shape-spreads-horizontal">${ SSs }</span></span>`
                     }, {
                         Mode: 'vertical',
                         Labels: { default: { default: `Vertical Scroll`, ja: `縦スクロール` } },
-                        Icon: `<span class="bibi-icon bibi-icon-view-vertical"><span class="bibi-shape bibi-shape-spreads bibi-shape-spreads-vertical">${ SSs }</span></span>`
+                        Icon: `<span class="bibi-icon bibi-icon-view bibi-icon-view-vertical"><span class="bibi-shape bibi-shape-spreads bibi-shape-spreads-vertical">${ SSs }</span></span>`
                     }].map(Button => sML.edit(Button, {
                         Notes: true,
                         action: () => R.changeView(Button)
@@ -2712,6 +2713,7 @@ I.FontSizeChanger = { create: () => {
             R.layOut({
                 before: () => R.Items.forEach(Item => { if(Item.changeFontSizeStep) Item.changeFontSizeStep(Step); }),
                 Reset: true,
+                DoNotCloseUtilities: true,
                 NoNotification: true
             }).then(() => {
                 E.dispatch('bibi:changed-font-size', { Step: Step });
@@ -2719,7 +2721,7 @@ I.FontSizeChanger = { create: () => {
             });
         }, 88);
     };
-    E.add('bibi:changes-font-size', () => E.dispatch('bibi:closes-utilities'));
+    //E.add('bibi:changes-font-size', () => E.dispatch('bibi:closes-utilities'));
   //E.add('bibi:changes-view', () => FontSizeChanger.changeFontSizeStep(0)); // unnecessary
     if(S['use-font-size-changer']) {
         const changeFontSizeStep = function() {
@@ -2737,7 +2739,7 @@ I.FontSizeChanger = { create: () => {
                     active:  { default: `Close Font Size Menu`, ja: `文字サイズメニューを閉じる` }
                 },
                 //className: 'bibi-button-font-size bibi-button-font-size-change',
-                Icon: `<span class="bibi-icon bibi-icon-fontsize bibi-icon-fontsize-change"></span>`,
+                Icon: `<span class="bibi-icon bibi-icon-change-fontsize"></span>`,
                 Help: true
             }),
             id: 'bibi-subpanel_font-size',
@@ -3095,16 +3097,6 @@ I.Slider = { create: () => {
             if(S.ARD == 'rtl') Progress = Slider.Rail['offset' + C.A_SIZE_L] - Progress;
             Slider.Rail.Progress.style[C.A_SIZE_l] = (Progress / Slider.Rail['offset' + C.A_SIZE_L] * 100) + '%';
         },
-        activate: () => {
-            Slider.UI.addEventListener(O['pointerdown'], Slider.onTouchStart);
-            Slider.Thumb.addEventListener(O['pointerdown'], Slider.onTouchStart);
-            O.HTML.addEventListener(O['pointerup'], Slider.onTouchEnd);
-            E.add('bibi:changing-intersection', () => Slider.progress());
-            Slider.progress();
-        },
-        activateItem: (Item) => {
-            Item.HTML.addEventListener(O['pointerup'], Slider.onTouchEnd);
-        },
         onTouchStart: (Eve) => { // console.log(Eve);
             //if(!Eve.target || (!Slider.contains(Eve.target) && Eve.target != Slider)) return;
             Eve.preventDefault();
@@ -3248,7 +3240,7 @@ I.Slider = { create: () => {
             if(Unlock) Slider.Bookmap.Locked = false;
             if(Slider.Bookmap.Locked) return false;
             return !Slider.Bookmap.parentElement
-                ? (Slider.Bookmap.Timer_putIn = setTimeout(() => Slider.Bookmap.Box.appendChild(Slider.Bookmap) && Slider.resetThumbAndRailSize(), Unlock ? 0 : 456))
+                ? (Slider.Bookmap.Timer_putIn = setTimeout(() => { Slider.Bookmap.Box.appendChild(Slider.Bookmap); Slider.resetThumbAndRailSize(); }, Unlock ? 0 : 456))
                 : false;
         },
         reset: () => setTimeout(() => {
@@ -3347,8 +3339,14 @@ I.Slider = { create: () => {
     E.add('bibi:opens-utilities',   Opt => E.dispatch('bibi:commands:open-slider',   Opt));
     E.add('bibi:closes-utilities',  Opt => E.dispatch('bibi:commands:close-slider',  Opt));
     E.add('bibi:toggles-utilities', Opt => E.dispatch('bibi:commands:toggle-slider', Opt));
-    E.add('bibi:opened',      Slider.activate);
-    E.add('bibi:loaded-item', Slider.activateItem);
+    E.add('bibi:loaded-item', Item => Item.HTML.addEventListener(O['pointerup'], Slider.onTouchEnd));
+    E.add('bibi:opened', () => {
+        Slider.UI.addEventListener(O['pointerdown'], Slider.onTouchStart);
+        Slider.Thumb.addEventListener(O['pointerdown'], Slider.onTouchStart);
+        O.HTML.addEventListener(O['pointerup'], Slider.onTouchEnd);
+        E.add('bibi:changing-intersection', () => Slider.progress());
+        Slider.progress();
+    });
     if(Slider.UI.reset) E.add(['bibi:opened', 'bibi:changed-view'], Slider.UI.reset);
     E.add('bibi:laid-out', () => {
         //Slider.BookStretchingEach = 0;
@@ -3527,10 +3525,11 @@ I.Arrows = { create: () => { if(!S['use-arrows']) return;
     E.add('bibi:scrolled',     () => Arrows.check());
     E.dispatch('bibi:created-arrows');
      // Optimize to Scrollbar Size
-    (_ => _('html.appearance-horizontal.book-full-height:not(.slider-opened)',       'height', O.Scrollbars.Width)
-       && _('html.appearance-horizontal:not(.book-full-height):not(.slider-opened)', 'height', O.Scrollbars.Width + I.Menu.Height)
-       && _('html.appearance-vertical:not(.slider-opened)',                          'width',  O.Scrollbars.Width)
-    )((Context, WidthOrHeight, Margin) => sML.appendCSSRule(
+    (_ => {
+        _('html.appearance-horizontal.book-full-height:not(.slider-opened)',       'height', O.Scrollbars.Width);
+        _('html.appearance-horizontal:not(.book-full-height):not(.slider-opened)', 'height', O.Scrollbars.Width + I.Menu.Height);
+        _('html.appearance-vertical:not(.slider-opened)',                          'width',  O.Scrollbars.Width);
+    })((Context, WidthOrHeight, Margin) => sML.appendCSSRule(
         `${ Context } div#bibi-arrow-back, ${ Context } div#bibi-arrow-forward`,
         `${ WidthOrHeight }: calc(100% - ${ Margin }px); ${ WidthOrHeight }: calc(100v${ WidthOrHeight.charAt(0) } - ${ Margin }px);`
     ));
@@ -3750,7 +3749,7 @@ I.KeyListener = { create: () => { if(!S['use-keys']) return;
         35: 'End',         36: 'Home',
         37: 'Left Arrow',  38: 'Up Arrow',  39: 'Right Arrow',  40: 'Down Arrow'
     });
-    E.add('bibi:opened',             (  ) => KeyListener.updateMovingParameters() && KeyListener.observe(document));
+    E.add('bibi:opened',             (  ) => { KeyListener.updateMovingParameters(); KeyListener.observe(document); });
     E.add('bibi:postprocessed-item', Item => Item.IsPlaceholder ? false : KeyListener.observe(Item.contentDocument));
     E.add('bibi:touched-key',        Eve  => KeyListener.tryMoving(Eve));
     E.dispatch('bibi:created-keylistener');
@@ -3786,8 +3785,10 @@ I.createButtonGroup = (Par = {}) => {
         const Button = I.createButton(Par);
         if(!Button) return null;
         Button.ButtonGroup = this;
-        this.appendChild(sML.create('li', { className: 'bibi-buttonbox bibi-buttonbox-' + Button.Type })).appendChild(Button)
-        this.Buttons.push(Button);
+        Button.ButtonBox = Button.ButtonGroup.appendChild(sML.create('li', { className: 'bibi-buttonbox bibi-buttonbox-' + Button.Type }));
+        if(!O.Touch) I.setHoverActions(I.observeHover(Button.ButtonBox));
+        Button.ButtonBox.appendChild(Button)
+        Button.ButtonGroup.Buttons.push(Button);
         return Button;
     };
     ButtonsToAdd.forEach(ButtonToAdd => {
@@ -3832,7 +3833,7 @@ I.createButton = (Par = {}) => {
         if(Button.ButtonGroup && Button.ButtonGroup.Busy) return false;
         return (Button.UIState != 'disabled');
     };
-    if(typeof Button.action == 'function') Button.addTapEventListener('tapped', function() { return Button.isAvailable() ? Button.action.apply(Button, arguments) : false; });
+    if(typeof Button.action == 'function') Button.addTapEventListener('tapped', () => Button.isAvailable() ? Button.action.apply(Button, arguments) : null);
     Button.Busy = false;
     return Button;
 };
@@ -4039,8 +4040,8 @@ I.setTapAction = (Ele) => {
     })();
     Ele.addTapEventListener('tapped', Eve => {
         if(Ele.isAvailable && !Ele.isAvailable(Eve)) return Ele;
-        if(Ele.Type == 'radio' && Ele.UIState == 'active') return Ele;
         if(Ele.UIState == 'disabled') return Ele;
+        if(Ele.UIState == 'active' && Ele.Type == 'radio') return Ele;
         onTapped(Eve);
         if(Ele.hideHelp) Ele.hideHelp();
         if(Ele.note) setTimeout(Ele.note, 0);
