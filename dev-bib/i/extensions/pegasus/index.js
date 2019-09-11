@@ -29,7 +29,7 @@ Bibi.x({
 })(function() {
 
     const Log = `%cBibi: riding %cPegasus %c(v${ this.version })`;
-    if(sML.UA.InternetExplorer || (sML.UA.Edge && !sML.UA.Chromium)) console.log(Log.replace(/%c/g, '')); else console.log(Log, O.log.NStyle, O.log.BStyle, O.log.NStyle);
+    if(sML.UA.Trident || sML.UA.EdgeHTML) console.log(Log.replace(/%c/g, '')); else console.log(Log, O.log.NStyle, O.log.BStyle, O.log.NStyle);
 
     O.isToBeExtractedIfNecessary = () => true;
 
