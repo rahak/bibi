@@ -11,42 +11,39 @@
  *
  */
 
-import LSDD from 'lsdd';
+//import LSDD from 'lsdd';
 import LSLD from 'lsld';
+
+const BibiExtensionPegasusLD = (S['book'] && U['key']) ? new LSLD({ url: S['book'], key: U['key'] || '', worker: document.currentScript.src.replace(/[^\/]+$/, 'lsldw.js') }) : null;
 
 Bibi.x({
 
     id: 'Pegasus',
     author: 'Lunascape Corporation',
-    version: '____pegasus-version____',
-
-    LSLD: new LSLD({
-        url: S['book'],
-        key: U['key'] || '',
-        worker: document.currentScript.src.replace(/[^\/]+$/, 'lsldw.js')
-    })
+    version: '____pegasus-version____'
 
 })(function() {
 
-    const Log = `%cBibi: riding %cPegasus %c(v${ this.version })`;
-    if(sML.UA.Trident || sML.UA.EdgeHTML) console.log(Log.replace(/%c/g, '')); else console.log(Log, O.log.NStyle, O.log.BStyle, O.log.NStyle);
+    const LSLD = BibiExtensionPegasusLD;
 
-    O.isToBeExtractedIfNecessary = () => true;
+    const Log = `%cBibi: 🎠 rides on the %cPegasus %c(v${ this.version })` + (typeof LSDD == 'undefined' ? ` [${ LSLD ? '+' : '-'}]LD [-]DD` : '');
+    console.log.apply(console, (sML.UA.Trident || sML.UA.EdgeHTML) ? [Log.replace(/%c/g, '')] : [Log].concat(O.log.NStyle, O.log.BStyle, O.log.NStyle));
 
-    O.retlieve = (Item) => {
-        Item = O.item(Item);
-        return this.LSLD.getBuffer(Item.Path).then(ABuf => {
-            if(O.isBin(Item)) Item.DataType = 'Blob', Item.Content = new Blob([ABuf], { type: Item['media-type'] });
-            else              Item.DataType = 'Text', Item.Content = new TextDecoder('utf-8').decode(new Uint8Array(ABuf));
-            return Item;
-        }).catch(() => Promise.reject());
-    };
+    if(LSLD) {
+        O.isToBeExtractedIfNecessary = () => true;
+        O.retlieve = (Item) => {
+            Item = O.item(Item);
+            return LSLD.getBuffer(Item.Path).then(ABuf => {
+                if(O.isBin(Item)) Item.DataType = 'Blob', Item.Content = new Blob([ABuf], { type: Item['media-type'] });
+                else              Item.DataType = 'Text', Item.Content = new TextDecoder('utf-8').decode(new Uint8Array(ABuf));
+                return Item;
+            }).catch(() => Promise.reject());
+        };
+        O.cancelRetlieving = (Item) => { try { LSLD.abort(Item.Path); } catch(Err) {} };
+    }
 
-    O.cancelRetlieving = (Item) => { try { this.LSLD.abort(Item.Path); } catch(Err) {} };
+    if(typeof LSDD == 'undefined') return;
 
-    if(true) return O.log(`LSLD: Debug Mode`);
-
-    O.log(`Loaded (with LSDD).`, '</g>');
     O.log = O.error = this.dummy = () => Promise.reject().catch(() => false);
     this.error = console.error || function(EM) { throw EM; };
 
@@ -70,7 +67,7 @@ Bibi.x({
             }
         }
         B.Package.Manifest.Items = B.Package.Spine.Items = R.Items = R.NonLinearItems = R.Spreads = R.Pages = [];
-        for(const _ in this.LSLD) delete this.LSLD[_];
+        if(this.LSLD) for(const _ in this.LSLD) delete this.LSLD[_];
         setTimeout(() => {
             O.HTML.className = sML.Environments.concat('notifier-shown').join(' ');
             O.HTML.style.height = O.Body.style.height = '';
