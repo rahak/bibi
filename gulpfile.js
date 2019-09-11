@@ -16,7 +16,8 @@ const Package = JSON.parse(require('fs').readFileSync('package.json'));
     gulp.task('merge:distribution-files', () => {
         return gulp.src([
             'bib/*',
-            'bib/i/**/*.*'
+            'bib/i/**/*.*',
+            'bib/bookshelf/*.*'
         ], {
             base: '.'
         })
