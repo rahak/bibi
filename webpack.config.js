@@ -40,8 +40,7 @@ const Config = {
         'bib/i/extensions/unzipper/index': 'js',
         'bib/i/extensions/zine/index': 'js',
         'bib/i/extensions/pegasus/index': 'js',
-        'bib/i/res/styles/bibi': 'scss',
-        'bib/i/res/styles/bibi.book': 'scss'
+        'bib/i/res/styles/bibi': 'scss'
     }),
     plugins: [
         new StringReplacePlugin(),
@@ -110,7 +109,7 @@ module.exports = (env, argv) => {
     ];
     Config.module.rules.push({
         test: /\.scss$/,
-        exclude: /bib\/i\.scss$/,
+        exclude: /(bib\/i|bibi\.book)\.scss$/,
         use: [
             MiniCSSExtractPlugin.loader,
             StringReplacePlugin.replace({ replacements: [{
@@ -120,7 +119,7 @@ module.exports = (env, argv) => {
         ].concat(CommonLoadersForCSS)
     });
     Config.module.rules.push({
-        test: /bib\/i\.scss$/,
+        test: /(bib\/i|bibi\.book)\.scss$/,
         use: [
             { loader: 'style-loader' }
         ].concat(CommonLoadersForCSS)
