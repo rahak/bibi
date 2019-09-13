@@ -23,6 +23,17 @@ Bibi.x({
             }).catch(() => Promise.reject());
         };
         O.cancelRetlieving = (Item) => { try { LSLD.abort(Item.Path); } catch(Err) {} };
+    } else if (LSZL) {
+        O.isToBeExtractedIfNecessary = () => true;
+        O.retlieve = (Item) => {
+            Item = O.item(Item);
+            return LSZL.getBuffer(Item.Path).then(ABuf => {
+                if(O.isBin(Item)) Item.DataType = 'Blob', Item.Content = new Blob([ABuf], { type: Item['media-type'] });
+                else              Item.DataType = 'Text', Item.Content = new TextDecoder('utf-8').decode(new Uint8Array(ABuf));
+                return Item;
+            }).catch(() => Promise.reject());
+        };
+        O.cancelRetlieving = (Item) => { try { LSLD.abort(Item.Path); } catch(Err) {} };
     }
 
     if(typeof LSDD == 'undefined') return;
