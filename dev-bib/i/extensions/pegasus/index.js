@@ -1,20 +1,5 @@
-/*!
- *
- *  # BiB/i Extension: Pegasus Extension Bundle
- *
- *  * Copyright (c) Lunascape Corporation - https://www.lunascape.co.jp
- *  * All rights reserved.
- *
- *  * Including:
- *      - LSDD: Lunascape Devtools Detector
- *      - LSLD: Lunascape Loader
- *
- */
-
-//import LSDD from 'lsdd';
-import LSLD from 'lsld';
-
-const BibiExtensionPegasusLD = (S['book'] && U['key']) ? new LSLD({ url: S['book'], key: U['key'] || '', worker: document.currentScript.src.replace(/[^\/]+$/, 'lsldw.js') }) : null;
+const LSLD = (S['book'] && U['key']) ? new (require('lsld'))({ url: S['book'], key: U['key'] || '', worker: document.currentScript.src.replace(/[^\/]+$/, 'lsldw.js') }) : null;
+//const LSDD = require('lsdd');
 
 Bibi.x({
 
@@ -23,8 +8,6 @@ Bibi.x({
     version: '____pegasus-version____'
 
 })(function() {
-
-    const LSLD = BibiExtensionPegasusLD;
 
     const Log = `%cBibi: 🎠 rides on the %cPegasus %c(v${ this.version })` + (typeof LSDD == 'undefined' ? ` [${ LSLD ? '+' : '-'}]LD [-]DD` : '');
     console.log.apply(console, (sML.UA.Trident || sML.UA.EdgeHTML) ? [Log.replace(/%c/g, '')] : [Log].concat(O.log.NStyle, O.log.BStyle, O.log.NStyle));

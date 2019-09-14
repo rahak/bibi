@@ -154,16 +154,18 @@ module.exports = (env, argv) => {
         Config.optimization.minimizer.push(new TerserPlugin({
             cache: true,
             parallel: true,
+            extractComments: false,
             terserOptions: {
                 ecma: 5,
                 compress: true,
                 output: {
-                    comments: /^!/,
+                    comments: /^\!/,
                     beautify: false
                 }
             }
         }));
         for(const N in Bibi.Banners) if(N) Config.plugins.push(new Webpack.BannerPlugin({ test: new RegExp(N.replace(/([\/\.])/g, '\\$1') + '$'), banner: Bibi.Banners[N], raw: true }));
+        Config.plugins.push(new Webpack.BannerPlugin({ test: /\/pegasus\/index\.js$/, banner: require('./dev-bib/i/extensions/pegasus/_banner.js').trim(), raw: true }));
         Config.plugins.push(new CopyPlugin([
             { from: 'LICENSE',   to: 'bib' }/*,
             { from: 'README.md', to: 'bib' }*/
