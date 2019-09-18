@@ -17,7 +17,7 @@ Usage
 ``` javascript
 // LSZL is used as ES6 Class.
 const lszl = new LSZL({
-  url: 'https://example.com/pass/to/crypted.epub'
+  url: 'https://example.com/pass/to/book.epub'
 });
 
 const promise = lsld.getBuffer('mimetype'); // returns a promise that will be resolved with an ArrayBuffer.
