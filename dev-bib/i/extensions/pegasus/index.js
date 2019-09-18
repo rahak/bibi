@@ -1,20 +1,6 @@
-/*!
- *
- *  # BiB/i Extension: Pegasus Extension Bundle
- *
- *  * Copyright (c) Lunascape Corporation - https://www.lunascape.co.jp
- *  * All rights reserved.
- *
- *  * Including:
- *      - LSDD: Lunascape Devtools Detector
- *      - LSLD: Lunascape Loader
- *
- */
-
-//import LSDD from 'lsdd';
-import LSLD from 'lsld';
-
-const BibiExtensionPegasusLD = (S['book'] && U['key']) ? new LSLD({ url: S['book'], key: U['key'] || '', worker: document.currentScript.src.replace(/[^\/]+$/, 'lsldw.js') }) : null;
+const LSLD = (S['book'] && U['key']) ? new (require('lsld'))({ url: S['book'], key: U['key'] || '', worker: document.currentScript.src.replace(/[^\/]+$/, 'lsldw.js') }) : null;
+const LSZL = (S['book'] && !LSLD) ? new (require('./lszl'))({ url: S['book'], worker: document.currentScript.src.replace(/[^\/]+$/, 'lszlw.js') }) : null;
+//const LSDD = require('lsdd');
 
 Bibi.x({
 
@@ -24,9 +10,7 @@ Bibi.x({
 
 })(function() {
 
-    const LSLD = BibiExtensionPegasusLD;
-
-    const Log = `%cBibi: 🎠 rides on the %cPegasus %c(v${ this.version })` + (typeof LSDD == 'undefined' ? ` [${ LSLD ? '+' : '-'}]LD [-]DD` : '');
+    const Log = `%cBibi: 🎠 rides on the %cPegasus %c(v${ this.version })` + (typeof LSDD == 'undefined' ? ` [${ LSLD ? '+' : '-'}]LD [-]DD [${ LSZL ? '+' : '-'}]ZL` : '');
     console.log.apply(console, (sML.UA.Trident || sML.UA.EdgeHTML) ? [Log.replace(/%c/g, '')] : [Log].concat(O.log.NStyle, O.log.BStyle, O.log.NStyle));
 
     if(LSLD) {
@@ -34,6 +18,17 @@ Bibi.x({
         O.retlieve = (Item) => {
             Item = O.item(Item);
             return LSLD.getBuffer(Item.Path).then(ABuf => {
+                if(O.isBin(Item)) Item.DataType = 'Blob', Item.Content = new Blob([ABuf], { type: Item['media-type'] });
+                else              Item.DataType = 'Text', Item.Content = new TextDecoder('utf-8').decode(new Uint8Array(ABuf));
+                return Item;
+            }).catch(() => Promise.reject());
+        };
+        O.cancelRetlieving = (Item) => { try { LSLD.abort(Item.Path); } catch(Err) {} };
+    } else if (LSZL) {
+        O.isToBeExtractedIfNecessary = () => true;
+        O.retlieve = (Item) => {
+            Item = O.item(Item);
+            return LSZL.getBuffer(Item.Path).then(ABuf => {
                 if(O.isBin(Item)) Item.DataType = 'Blob', Item.Content = new Blob([ABuf], { type: Item['media-type'] });
                 else              Item.DataType = 'Text', Item.Content = new TextDecoder('utf-8').decode(new Uint8Array(ABuf));
                 return Item;
