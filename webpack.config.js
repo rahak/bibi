@@ -47,7 +47,10 @@ const Config = {
         new FixStyleOnlyEntriesPlugin({ extensions: ['scss', 'css'] }),
         new MiniCSSExtractPlugin({ filename: '[name].css' }),
         new BrowserSyncPlugin(require('./bs-config.js'), { reload: true, injectCss: true }),
-        new CopyPlugin([{ from: 'node_modules/lsld/dist/lsldw.js', to: 'bib/i/extensions/pegasus' }])
+        new CopyPlugin([
+            { from: 'node_modules/lsld/dist/lsldw.js', to: 'bib/i/extensions/pegasus' },
+            { from: 'dev-bib/i/extensions/pegasus/lszlw.js', to: 'bib/i/extensions/pegasus' },
+        ])
     ],//devServer: { compress: true, port: 61673 },
     module: { rules: [] }
 };

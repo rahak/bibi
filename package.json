@@ -26,8 +26,9 @@
     "develop+watch": "webpack --config webpack.config.js --progress --colors --mode development --watch",
     "make:distribution": "npm run build && gulp make:distribution",
     "make:dress-template": "gulp make:dress-template",
+    "make:lszl": "cd packages/lszl && rm -rf dist && npm i && npm run build --production && cp dist/*.js ../../dev-bib/i/extensions/pegasus",
     "serve": "browser-sync start --config bs-config.js",
-    "start": "npm run develop+watch"
+    "start": "npm run develop+watch",
     "release": "npm run make:distribution && npx release-it --ci"
   },
   "devDependencies": {
