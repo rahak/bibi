@@ -69,6 +69,8 @@ Bibi.preset({
 "spread-gap"                   : 8, // Number of pixel
 "spread-margin"                : 0, // Number of pixel
 
+"fix-nav-ttb"                  : "no", // "yes" or "no" or "desktop" or "mobile"
+
 "spread-border-radius"         : "", // CSS border-radius value or ""
 "spread-box-shadow"            : "", // CSS box-shadow value or ""
 
@@ -79,8 +81,10 @@ Bibi.preset({
 //-- Extensions
 //----------------------------------------------------------------------------------------------------------------------------------------------
 
-"extensions": [
-    { "src": "extensions/pegasus/index.js" },
+"extensions": [{ "src": "extensions/pegasus/index.js" },
+    //{ "src": "extensions/analytics/index.js", "tracking-id": "" }, // "tracking-id": Your own Google Analytics tracking id, as "UA-********-*"
+    //{ "src": "extensions/epubcfi/index.js" },
+    //{ "src": "extensions/unaccessibilizer/index.js", "select-elements": "prevent", "save-images": "prevent", "use-contextmenu": "prevent" },
 ""], // "id" must be defined in each script. "Unzipper", "Zine", and "Bibi" are reserved for "id".
 
 
