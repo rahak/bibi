@@ -104,7 +104,7 @@ Bibi.initialize = () => {
         // Say Bye-bye
         I.note(`Your Browser Is Not Compatible`, 99999999999, 'ErrorOccured');
         return O.error(I.Veil.byebye({
-            'en': `<span>I\'m so Sorry....</span> <span>Your Browser Is</span> <span>Not Compatible.</span>`,
+            'en': `<span>Sorry....</span> <span>Your Browser Is</span> <span>Not Compatible.</span>`,
             'ja': `<span>大変申し訳ありません。</span> <span>お使いのブラウザでは、</span><span>動作しません。</span>`
         }));
     }
@@ -164,6 +164,7 @@ Bibi.initialize = () => {
     O.Scrollbars = { Width: window.innerWidth - O.HTML.offsetWidth, Height: window.innerHeight - O.HTML.offsetHeight };
     O.HTML.style.width = O.Body.style.width = '100%', O.Body.style.height = '';
     S.initialize();
+    O.HTML.classList.toggle('book-full-height', S['use-full-height']);
     O.HTML.classList.remove('welcome');
     E.dispatch('bibi:initialized');
 };
@@ -250,7 +251,7 @@ Bibi.loadBook = (BookDataParam) => Promise.resolve().then(() => {
     S.update();
     R.updateOrientation();
     R.resetStage();
-}).then(() => new Promise(resolve => {
+}).then(() => {
     // Create Cover
     O.log(`Creating Cover...`, '<g:>');
     if(B.CoverImageItem) {
@@ -259,9 +260,8 @@ Bibi.loadBook = (BookDataParam) => Promise.resolve().then(() => {
     } else {
         O.log(`Will Be Created. (w/o Image)`, '</g>');
     }
-    resolve(); // ←↙ do async
-    L.createCover();
-})).then(() => {
+    return L.createCover(); // ← loading is async
+}).then(() => {
     // Load Navigation
     if(!B.NavItem) {
         O.log(`No Navigation.`)
@@ -464,6 +464,7 @@ L.wait = () => {
         O.HTML.classList.add('busy');
         O.HTML.classList.remove('waiting');
         I.note(`Loading...`);
+        return new Promise(resolve => setTimeout(resolve, 99));
     });
 };
 
@@ -471,6 +472,7 @@ L.wait = () => {
 L.play = () => {
     if(S['start-in-new-window']) return window.open(location.href);
     L.Played = true;
+    R.resetStage();
     L.wait.resolve();
     E.dispatch('bibi:played');
 };
@@ -789,18 +791,15 @@ L.loadPackage = () => O.openDocument(B.Package).then(L.loadPackage.process);
 
 
 L.createCover = () => {
-    const VCover =                I.Veil.Cover =                    I.Veil.appendChild(sML.create('div', { id:           'bibi-veil-cover'      }));
-          VCover.Info =                                             VCover.appendChild(sML.create('p',   { id:           'bibi-veil-cover-info' }));
-    const PCover = I.Menu.Panel.BookInfo.Cover = I.Menu.Panel.BookInfo.Box.appendChild(sML.create('div', { id: 'bibi-panel-bookinfo-cover'      }));
-          PCover.Info =                                             PCover.appendChild(sML.create('p',   { id: 'bibi-panel-bookinfo-cover-info' }));
+    const VCover = I.Veil.Cover, PCover = I.Panel.BookInfo.Cover;
     VCover.Info.innerHTML = PCover.Info.innerHTML = (() => {
         const BookID = [];
-        if(B.Title)     BookID.push(`<strong>${ B.Title     }</strong>`);
-        if(B.Creator)   BookID.push(    `<em>${ B.Creator   }</em>`    );
-        if(B.Publisher) BookID.push(  `<span>${ B.Publisher }</span>`  );
+        if(B.Title)     BookID.push(`<strong>${ L.createCover.optimizeString(B.Title)     }</strong>`);
+        if(B.Creator)   BookID.push(    `<em>${ L.createCover.optimizeString(B.Creator)   }</em>`    );
+        if(B.Publisher) BookID.push(  `<span>${ L.createCover.optimizeString(B.Publisher) }</span>`  );
         return BookID.join(' ');
     })();
-    new Promise((resolve, reject) => {
+    return Promise.resolve(new Promise((resolve, reject) => {
         if(!B.CoverImageItem || !B.CoverImageItem.Path) return reject();
         let TimedOut = false;
         const TimerID = setTimeout(() => { TimedOut = true; reject(); }, 5000);
@@ -815,13 +814,17 @@ L.createCover = () => {
         PCover.insertBefore(sML.create('img', { src: ImageURI }), PCover.Info);
     }).catch(() => {
         VCover.className = PCover.className = 'without-cover-image';
-        VCover.appendChild(I.getBookIcon());
-    });
+        VCover.insertBefore(I.getBookIcon(), VCover.Info);
+        PCover.insertBefore(I.getBookIcon(), PCover.Info);
+    }));
 };
+    L.createCover.optimizeString = (Str) => `<span>` + Str.replace(
+        /([ 　・／]+)/g, '</span><span>$1'
+    ) + `</span>`;
 
 
 L.loadNavigation = () => O.openDocument(B.NavItem).then(Doc => {
-    const PNav = I.Menu.Panel.BookInfo.Navigation = I.Menu.Panel.BookInfo.Box.appendChild(sML.create('div', { id: 'bibi-panel-bookinfo-navigation' }));
+    const PNav = I.Panel.BookInfo.Navigation = I.Panel.BookInfo.insertBefore(sML.create('div', { id: 'bibi-panel-bookinfo-navigation' }), I.Panel.BookInfo.firstElementChild);
     PNav.innerHTML = '';
     const NavContent = document.createDocumentFragment();
     if(B.NavItem.NavType == 'Navigation Document') {
@@ -935,7 +938,7 @@ L.coordinateLinkages = (BasePath, RootElement, InNav) => {
     L.coordinateLinkages.setJump = (A) => A.addEventListener('click', Eve => {
         Eve.preventDefault(); 
         Eve.stopPropagation();
-        if(A.Destination) new Promise(resolve => A.InNav ? I.Menu.Panel.toggle().then(resolve) : resolve()).then(() => {
+        if(A.Destination) new Promise(resolve => A.InNav ? I.Panel.toggle().then(resolve) : resolve()).then(() => {
             if(L.Opened) return R.focusOn({ Destination: A.Destination, Duration: 0 });
             if(S['start-in-new-window']) return window.open(location.href + (location.hash ? ',' : '#') + 'pipi(nav:' + A.NavANumber + ')');
             S['to'] = A.Destination;
@@ -1095,7 +1098,11 @@ L.postprocessItem = (Item) => {
             }
         }
     });
-    Item.contentDocument.addEventListener('wheel', R.Main.listenWheel, { capture: true, passive: false });
+    /*
+    if(!O.Touch) {
+        if(!sML.UA.Gecko) Item.contentDocument.addEventListener('wheel', R.Main.listenWheel, { capture: true, passive: false });
+    }
+    */
     I.observeTap(Item.HTML);
     Item.HTML.addTapEventListener('tap',         R.onTap);
     Item.HTML.addEventListener(O['pointermove'], R.onPointerMove);
@@ -1225,7 +1232,6 @@ R.initialize = () => {
             R.Main.scrollLeft = R.Main.scrollLeft + Eve.deltaX;
             R.Main.scrollTop  = R.Main.scrollTop  + Eve.deltaY;
         };
-        //R.Main.addEventListener('wheel', R.onWheel, { capture: true, passive: true });
         I.observeTap(O.HTML);
         O.HTML.addTapEventListener('tap',         R.onTap);
         O.HTML.addEventListener(O['pointermove'], R.onPointerMove);
@@ -1279,12 +1285,7 @@ R.resetStage = () => {
     R.Stage.Height = WIH;
     R.Stage[C.A_SIZE_B] -= O.Scrollbars[C.A_SIZE_B] + S['spread-margin'] * 2;
     window.scrollTo(0, 0);
-    if(S['use-full-height']) {
-        O.HTML.classList.add('book-full-height');
-    } else {
-        O.HTML.classList.remove('book-full-height');
-        R.Stage.Height -= I.Menu.Height;
-    }
+    if(!S['use-full-height']) R.Stage.Height -= I.Menu.Height;
     if(S['spread-margin'] > 0) R.Main.Book.style['padding' + C.L_BASE_S] = R.Main.Book.style['padding' + C.L_BASE_E] = S['spread-margin'] + 'px';
     R.Main.style['background'] = S['book-background'] ? S['book-background'] : '';
 };
@@ -1800,8 +1801,9 @@ R.onResize = (Eve) => {
     if(!L.Opened) return;
     if(!R.Resizing) {
         R.Resizing = true;
-        R.FirstIntersectingPageBeforeResizing = R.IntersectingPages[0];
-        R.Main.style.visibility = 'hidden';
+        //R.FirstIntersectingPageBeforeResizing = R.IntersectingPages[0];
+        //R.onResize.TargetPageAfterResizing = R.Current.List && R.Current.List[0] && R.Current.List[0].Page ? R.Current.List[0].Page : R.IntersectingPages[0];
+        R.onResize.TargetPageAfterResizing = R.Current.List[0].Page;
         ////////R.Main.removeEventListener('scroll', R.onScroll);
         O.Busy = true;
         O.HTML.classList.add('busy');
@@ -1810,12 +1812,12 @@ R.onResize = (Eve) => {
     clearTimeout(R.Timer_onResizeEnd);
     R.Timer_onResizeEnd = setTimeout(() => {
         R.updateOrientation();
-        const CurrentPage = R.FirstIntersectingPageBeforeResizing;
+        const TargetPage = R.onResize.TargetPageAfterResizing, TargetSpread = TargetPage.Spread;
         R.layOut({
             Reset: true,
             Destination: {
-                SpreadIndex: CurrentPage.Spread.Index,
-                PageProgressInSpread: CurrentPage.IndexInSpread / CurrentPage.Spread.Pages.length
+                SpreadIndex: TargetSpread.Index,
+                PageProgressInSpread: TargetPage.IndexInSpread / TargetSpread.Pages.length
             }
         }).then(() => {
             E.dispatch('bibi:resized', Eve);
@@ -1823,11 +1825,10 @@ R.onResize = (Eve) => {
             O.HTML.classList.remove('busy');
             O.Busy = false;
             ////////R.Main.addEventListener('scroll', R.onScroll);
-            R.Main.style.visibility = '';
             //R.onScroll();
             R.Resizing = false;
         });
-    }, O.Touch ? 444 : 222);
+    }, sML.UA.Trident ? 1200 : O.Touch ? 600 : 300);
 };
 
 
@@ -1861,7 +1862,7 @@ R.onPointerUp = (Eve) => {
 };
 
 
-R.changeView = (Par) => {
+R.changeView = (Par, Opt = {}) => {
     if(
         S['fix-reader-view-mode'] ||
         !Par || typeof Par.Mode != 'string' || !/^(paged|horizontal|vertical)$/.test(Par.Mode) ||
@@ -1872,19 +1873,22 @@ R.changeView = (Par) => {
         E.dispatch('bibi:changes-view');
         O.Busy = true;
         O.HTML.classList.add('busy');
+        O.HTML.classList.add('changing-view');
         setTimeout(() => {
             //if(Par.Mode != 'paged') R.Spreads.forEach(Spread => Spread.style.opacity = '');
             R.layOut({
                 Reset: true,
+                NoNotification: Opt.NoNotification,
                 Setting: {
                     'reader-view-mode': Par.Mode
                 }
             }).then(() => {
+                O.HTML.classList.remove('changing-view');
                 O.HTML.classList.remove('busy');
                 O.Busy = false;
                 setTimeout(() => E.dispatch('bibi:changed-view', Par.Mode), 0);
             });
-        }, 0);
+        }, O.Touch ? 99 : 9);
     } else {
         S.update({
             'reader-view-mode': Par.Mode
@@ -1917,42 +1921,48 @@ R.updateCurrent = () => {
 
     R.updateCurrent.getList = () => {
         if(!R.IntersectingPages.length) return null;
-        let List = [];
+        let List = [], List_SpreadContained = [];
         const FirstIndex = sML.limitMin(R.IntersectingPages[                             0].Index - 2,                  0);
         const  LastIndex = sML.limitMax(R.IntersectingPages[R.IntersectingPages.length - 1].Index + 2, R.Pages.length - 1);
-        for(let BiggestIntersectionRatio = 0, i = FirstIndex; i <= LastIndex; i++) { const Page = R.Pages[i];
-            const PageCoord = sML.getCoord(Page);
-            const D = C.L_AXIS_D, L = C.L_SIZE_L;
-            const LengthInside = Math.min(R.Current.Frame.After * D, PageCoord[C.L_BASE_A] * D) - Math.max(R.Current.Frame.Before * D, PageCoord[C.L_BASE_B] * D);
-            const IntersectionRatio = (LengthInside <= 0 || !PageCoord[L] || isNaN(LengthInside)) ? 0 : Math.round(LengthInside / PageCoord[L] * 100);
-            if(IntersectionRatio <= 0) {
+        for(let BiggestPageIntersectionRatio = 0, i = FirstIndex; i <= LastIndex; i++) { const Page = R.Pages[i];
+            const PageIntersectionStatus = R.updateCurrent.getIntersectionStatus(Page, 'WithDetail');
+            if(!PageIntersectionStatus || PageIntersectionStatus.Ratio < BiggestPageIntersectionRatio) {
                 if(List.length) break;
             } else {
-                const Current = {
-                    Page: Page,
-                    IntersectionRatio: IntersectionRatio,
-                    IntersectionStatus: R.updateCurrent.getIntersectionStatus(IntersectionRatio, PageCoord)
-                };
-                     if(IntersectionRatio >  BiggestIntersectionRatio) List  =  [Current], BiggestIntersectionRatio = IntersectionRatio;
-                else if(IntersectionRatio == BiggestIntersectionRatio) List.push(Current);
+                const Current = { Page: Page, PageIntersectionStatus: PageIntersectionStatus };
+                if(List.length) {
+                    const Prev = List[List.length - 1];
+                    if(Prev.Page.Item   == Page.Item  )   Current.ItemIntersectionStatus =   Prev.ItemIntersectionStatus;
+                    if(Prev.Page.Spread == Page.Spread) Current.SpreadIntersectionStatus = Prev.SpreadIntersectionStatus;
+                }
+                if(  !Current.ItemIntersectionStatus)   Current.ItemIntersectionStatus = R.updateCurrent.getIntersectionStatus(Page.Item.Box); // Item is scaled.
+                if(!Current.SpreadIntersectionStatus) Current.SpreadIntersectionStatus = R.updateCurrent.getIntersectionStatus(Page.Spread);   // SpreadBox has margin.
+                if(Current.SpreadIntersectionStatus.Ratio == 1) List_SpreadContained.push(Current);
+                if(PageIntersectionStatus.Ratio > BiggestPageIntersectionRatio) List   = [Current], BiggestPageIntersectionRatio = PageIntersectionStatus.Ratio;
+                else                                                            List.push(Current);
             }
         }
-        return List.length ? List : null;
+        return List_SpreadContained.length ? List_SpreadContained : List.length ? List : null;
     };
 
-    R.updateCurrent.getIntersectionStatus = (PageRatio, PageCoord) => {
-        const IntersectionStatus = {};
-        if(PageRatio >= 100) {
-            IntersectionStatus.Contained = true;
-        } else {
-            const D = C.L_AXIS_D, L = C.L_SIZE_L;
-            const FC_B = R.Current.Frame.Before * D, FC_A = R.Current.Frame.After * D;
-            const PC_B = PageCoord[C.L_BASE_B]  * D, PC_A = PageCoord[C.L_BASE_A] * D;
-                 if(FC_B <  PC_B        ) IntersectionStatus.Entering = true;
-            else if(FC_B == PC_B        ) IntersectionStatus.Headed   = true;
-            else if(        PC_A == FC_A) IntersectionStatus.Footed   = true;
-            else if(        PC_A <  FC_A) IntersectionStatus.Passing  = true;
-            if(R.Main['offset' + L] < PageCoord[L]) IntersectionStatus.Oversize = true;
+    R.updateCurrent.getIntersectionStatus = (Ele, WithDetail) => {
+        const Coord = sML.getCoord(Ele), B = C.L_BASE_B, A = C.L_BASE_A, L = C.L_SIZE_L, D = C.L_AXIS_D;
+        const LengthInside = Math.min(R.Current.Frame.After * D, Coord[A] * D) - Math.max(R.Current.Frame.Before * D, Coord[B] * D);
+        const Ratio = (LengthInside <= 0 || !Coord[L] || isNaN(LengthInside)) ? 0 : LengthInside / Coord[L];
+        if(Ratio <= 0) return null;
+        const IntersectionStatus = { Ratio: Ratio };
+        if(WithDetail) {
+            if(Ratio >= 1) {
+                IntersectionStatus.Contained = true;
+            } else {
+                const FC_B = R.Current.Frame.Before * D, FC_A = R.Current.Frame.After * D;
+                const PC_B = Coord[C.L_BASE_B]      * D, PC_A = Coord[C.L_BASE_A]     * D;
+                     if(FC_B <  PC_B        ) IntersectionStatus.Entering = true;
+                else if(FC_B == PC_B        ) IntersectionStatus.Headed   = true;
+                else if(        PC_A == FC_A) IntersectionStatus.Footed   = true;
+                else if(        PC_A <  FC_A) IntersectionStatus.Passing  = true;
+                if(R.Main['offset' + L] < Coord[L]) IntersectionStatus.Oversize = true;
+            }
         }
         return IntersectionStatus;
     };
@@ -2132,33 +2142,31 @@ R.moveBy = (Par) => new Promise((resolve, reject) => {
     if(Par.Distance == 0 || isNaN(Par.Distance)) return reject();
     Par.Distance = Par.Distance < 0 ? -1 : 1;
     E.dispatch('bibi:is-going-to:move-by', Par);
-    const Current = (Par.Distance > 0 ? R.Current.List.slice(-1) : R.Current.List)[0];
-    const CurrentPage = Current.Page;
+    const Current = (Par.Distance > 0 ? R.Current.List.slice(-1) : R.Current.List)[0], CurrentPage = Current.Page, CurrentItem = CurrentPage.Item;
     let Promised = {};
     if(
         R.Columned ||
         S.BRL == 'pre-paginated' ||
-        CurrentPage.Item.Ref['rendition:layout'] == 'pre-paginated' ||
-        CurrentPage.Item.Outsourcing ||
-        CurrentPage.Item.Pages.length == 1 ||
+        CurrentItem.Ref['rendition:layout'] == 'pre-paginated' ||
+        CurrentItem.Outsourcing ||
+        CurrentItem.Pages.length == 1 ||
         (Par.Distance < 0 && CurrentPage.IndexInItem == 0) ||
-        (Par.Distance > 0 && CurrentPage.IndexInItem == CurrentPage.Item.Pages.length - 1)
+        (Par.Distance > 0 && CurrentPage.IndexInItem == CurrentItem.Pages.length - 1)
     ) {
         let Side = Par.Distance > 0 ? 'before' : 'after';
-        const CurrentIntersectionStatus = Current.IntersectionStatus;
-        if(CurrentIntersectionStatus.Oversize) {
+        if(Current.PageIntersectionStatus.Oversize) {
             if(Par.Distance > 0) {
-                     if(CurrentIntersectionStatus.Entering) Par.Distance = 0, Side = 'before';
-                else if(CurrentIntersectionStatus.Headed  ) Par.Distance = 0, Side = 'after';
+                     if(Current.PageIntersectionStatus.Entering) Par.Distance = 0, Side = 'before';
+                else if(Current.PageIntersectionStatus.Headed  ) Par.Distance = 0, Side = 'after';
             } else {
-                     if(CurrentIntersectionStatus.Footed  ) Par.Distance = 0, Side = 'before';
-                else if(CurrentIntersectionStatus.Passing ) Par.Distance = 0, Side = 'before';
+                     if(Current.PageIntersectionStatus.Footed  ) Par.Distance = 0, Side = 'before';
+                else if(Current.PageIntersectionStatus.Passing ) Par.Distance = 0, Side = 'before';
             }
         } else {
             if(Par.Distance > 0) {
-                if(CurrentIntersectionStatus.Entering) Par.Distance = 0, Side = 'before';
+                if(Current.PageIntersectionStatus.Entering) Par.Distance = 0, Side = 'before';
             } else {
-                if(CurrentIntersectionStatus.Passing ) Par.Distance = 0, Side = 'before';
+                if(Current.PageIntersectionStatus.Passing ) Par.Distance = 0, Side = 'before';
             }
         }
         let DestinationPageIndex = CurrentPage.Index + Par.Distance;
@@ -2226,6 +2234,7 @@ I.initialize = () => {
     E.bind('bibi:readied', () => {
         I.Catcher.create();
         I.Menu.create();
+        I.Panel.create();
         I.Help.create();
         I.PoweredBy.create();
         I.FontSizeChanger.create();
@@ -2320,6 +2329,8 @@ I.Veil = { create: () => {
         Veil.open();
         return Msg['en'] ? Msg['en'].replace(/<[^>]*>/g, '') : '';
     };
+    Veil.Cover      = Veil.appendChild(      sML.create('div', { id: 'bibi-veil-cover'      }));
+    Veil.Cover.Info = Veil.Cover.appendChild(sML.create('p',   { id: 'bibi-veil-cover-info' }));
     E.dispatch('bibi:created-veil');
 }};
 
@@ -2331,7 +2342,7 @@ I.Catcher = { create: () => { if(S['book'] || S.BookDataElement || !S['accept-lo
             `<div class="pgroup" lang="en">`,
                 `<p><strong>Pass Me Your EPUB File!</strong></p>`,
                 `<p><em>You Can Open Your Own EPUB.</em></p>`,
-                `<p><span>Please ${ O.Touch ? 'Tap' : 'Drag & Drop It Here. <br />Or Click' } Here and Choose It.</span></p>`,
+                `<p><span>Please ${ O.Touch ? 'Tap Screen' : 'Drag & Drop It Here. <br />Or Click Screen' } and Choose It.</span></p>`,
                 `<p><small>(Open in Your Device without Uploading)</small></p>`,
             `</div>`
         ].join(''),
@@ -2339,7 +2350,7 @@ I.Catcher = { create: () => { if(S['book'] || S.BookDataElement || !S['accept-lo
             `<div class="pgroup" lang="ja">`,
                 `<p><strong>EPUBファイルをここにください！</strong></p>`,
                 `<p><em>お持ちの EPUB ファイルを<br />開くことができます。</em></p>`,
-                `<p><span>${ O.Touch ? 'ここをタップ' : 'ここにドラッグ＆ドロップするか、<br />ここをクリック' }して選択してください。</span></p>`,
+                `<p><span>${ O.Touch ? '画面をタップ' : 'ここにドラッグ＆ドロップするか、<br />画面をクリック' }して選択してください。</span></p>`,
                 `<p><small>（外部に送信されず、この端末の中で開きます）</small></p>`,
             `</div>`
         ].join('')
@@ -2381,7 +2392,7 @@ I.Menu = { create: () => {
     //else if( S['place-menubar-at-top']) O.HTML.classList.add('menubar-top');
     //else                                O.HTML.classList.add('menubar-bottom');
     const Menu = I.Menu = O.Body.appendChild(sML.create('div', { id: 'bibi-menu' }, I.Menu)); delete Menu.create;
-    Menu.addEventListener('click', Eve => Eve.stopPropagation());
+    //Menu.addEventListener('click', Eve => Eve.stopPropagation());
     I.setHoverActions(Menu);
     I.setToggleAction(Menu, {
         onopened: () => { O.HTML.classList.add(   'menu-opened'); E.dispatch('bibi:opened-menu'); },
@@ -2403,7 +2414,7 @@ I.Menu = { create: () => {
             Menu.classList.remove('hot');
         }, 1234);
     });*/
-    if(!O.Touch) {
+    if(!O.Touch) E.add('bibi:opened', () => {
         E.add('bibi:moved-pointer', Eve => {
             if(I.isPointerStealth()) return false;
             const BibiEvent = O.getBibiEvent(Eve);
@@ -2414,7 +2425,8 @@ I.Menu = { create: () => {
                 Menu.Timer_close = setTimeout(() => E.dispatch(Menu, 'bibi:unhovers', Eve), 123);
             }
         });
-    }
+        if(!sML.UA.Gecko) Menu.addEventListener('wheel', R.Main.listenWheel, { capture: true, passive: false });
+    });
     Menu.L = Menu.appendChild(sML.create('div', { id: 'bibi-menu-l' }));
     Menu.R = Menu.appendChild(sML.create('div', { id: 'bibi-menu-r' }));
     [Menu.L, Menu.R].forEach(MenuSide => {
@@ -2426,55 +2438,16 @@ I.Menu = { create: () => {
             return this.appendChild(ButtonGroup);
         };
     });
-    sML.appendCSSRule([ // Optimize to Scrollbar Size
-        'html.appearance-vertical:not(.veil-opened):not(.slider-opened) div#bibi-menu'
-    ].join(', '), 'width: calc(100% - ' + (O.Scrollbars.Width) + 'px);');
-    sML.appendCSSRule([ // Optimize to Scrollbar Size
-        'html.appearance-vertical:not(.veil-opened):not(.slider-opened).panel-opened div#bibi-menu',
-        'html.appearance-vertical:not(.veil-opened):not(.slider-opened).subpanel-opened div#bibi-menu'
-    ].join(', '), 'width: 100%; padding-right: ' + (O.Scrollbars.Width) + 'px;');
+    { // Optimize to Scrollbar Size
+        const _Common = 'html.appearance-vertical:not(.veil-opened):not(.slider-opened)', _M = ' div#bibi-menu';
+        sML.appendCSSRule(_Common + _M, 'width: calc(100% - ' + O.Scrollbars.Width + 'px);');
+        sML.appendCSSRule([_Common + '.panel-opened' + _M, _Common + '.subpanel-opened' + _M].join(', '), 'padding-right: ' + O.Scrollbars.Width + 'px;');
+    }
     I.OpenedSubpanel = null;
     I.Subpanels = [];
-    Menu.Panel.create();
     Menu.Config.create();
     E.dispatch('bibi:created-menu');
 }};
-
-    I.Menu.Panel = { create: () => {
-        const Menu = I.Menu;
-        const Panel = Menu.Panel = O.Body.appendChild(sML.create('div', { id: 'bibi-panel' }));
-        I.setToggleAction(Panel, {
-            onopened: () => { O.HTML.classList.add(   'panel-opened'); E.dispatch('bibi:opened-panel'); },
-            onclosed: () => { O.HTML.classList.remove('panel-opened'); E.dispatch('bibi:closed-panel'); }
-        });
-        E.add('bibi:commands:open-panel',   Panel.open);
-        E.add('bibi:commands:close-panel',  Panel.close);
-        E.add('bibi:commands:toggle-panel', Panel.toggle);
-        E.add('bibi:closes-utilities',      Panel.close);
-        Panel.Labels = {
-            default: { default: `Opoen this Index`, ja: `この目次を開く`   },
-            active:  { default: `Close this Index`, ja: `この目次を閉じる` }
-        };
-        I.setFeedback(Panel, { StopPropagation: true });
-        Panel.addTapEventListener('tapped', () => E.dispatch('bibi:commands:toggle-panel'));
-        sML.appendCSSRule('html.page-rtl div#bibi-panel:after', 'bottom: ' + (O.Scrollbars.Height) + 'px;'); // Optimize to Scrollbar Size
-        Panel.BookInfo     = Panel.appendChild(         sML.create('div', { id: 'bibi-panel-bookinfo'     }));
-        Panel.BookInfo.Box = Panel.BookInfo.appendChild(sML.create('div', { id: 'bibi-panel-bookinfo-box' }));
-        const Opener = Panel.Opener = Menu.L.addButtonGroup({ Sticky: true }).addButton({
-            Type: 'toggle',
-            Labels: {
-                default: { default: `Open Index`,  ja: `目次を開く`   },
-                active:  { default: `Close Index`, ja: `目次を閉じる` }
-            },
-            Help: true,
-            Icon: `<span class="bibi-icon bibi-icon-toggle-panel">${ (Bars => { for(let i = 1; i <= 6; i++) Bars += '<span></span>'; return Bars; })('') }</span>`,
-            action: () => Panel.toggle()
-        });
-        E.add('bibi:opened-panel', () => I.setUIState(Opener, 'active'            ));
-        E.add('bibi:closed-panel', () => I.setUIState(Opener, ''                  ));
-        E.add('bibi:started',      () =>    sML.style(Opener, { display: 'block' }));
-        E.dispatch('bibi:created-panel');
-    }};
 
     I.Menu.Config = { create: () => {
         const Menu = I.Menu;
@@ -2508,12 +2481,12 @@ I.Menu = { create: () => {
             const Config = I.Menu.Config;
             const /* SpreadShapes */ SSs = (/* SpreadShape */ SS => SS + SS + SS)((/* ItemShape */ IS => `<span class="bibi-shape bibi-shape-spread">${ IS + IS }</span>`)(`<span class="bibi-shape bibi-shape-item"></span>`));
             const Section = Config.ViewModeSection = Config.addSection({
-                Labels: { default: { default: `Layout Mode`, ja: `表示モード` } },
+                Labels: { default: { default: `View Mode`, ja: `表示モード` } },
                 ButtonGroups: [{
                     ButtonType: 'radio',
                     Buttons: [{
                         Mode: 'paged',
-                        Labels: { default: { default: `Page Flipping <small>(with ${ O.Touch ? 'Tap/Swipe' : 'Click/Wheel' })</small>`, ja: `ページ単位<small>（${ O.Touch ? 'タップ／スワイプ' : 'クリック／ホイール' }）</small>` } },
+                        Labels: { default: { default: `Paged <small>(Flip with ${ O.Touch ? 'Tap/Swipe' : 'Click/Wheel' })</small>`, ja: `ページ単位<small>（${ O.Touch ? 'タップ／スワイプ' : 'クリック／ホイール' }で移動）</small>` } },
                         Icon: `<span class="bibi-icon bibi-icon-view bibi-icon-view-paged"><span class="bibi-shape bibi-shape-spreads bibi-shape-spreads-paged">${ SSs }</span></span>`
                     }, {
                         Mode: 'horizontal',
@@ -2525,7 +2498,7 @@ I.Menu = { create: () => {
                         Icon: `<span class="bibi-icon bibi-icon-view bibi-icon-view-vertical"><span class="bibi-shape bibi-shape-spreads bibi-shape-spreads-vertical">${ SSs }</span></span>`
                     }].map(Button => sML.edit(Button, {
                         Notes: true,
-                        action: () => R.changeView(Button)
+                        action: () => R.changeView(Button, { NoNotification: true })
                     }))
                 }, /*{
                     Buttons: []
@@ -2634,6 +2607,45 @@ I.Menu = { create: () => {
         }};
 
 
+I.Panel = { create: () => {
+    const Panel = I.Panel = O.Body.appendChild(sML.create('div', { id: 'bibi-panel' }));
+    I.setToggleAction(Panel, {
+        onopened: () => { O.HTML.classList.add(   'panel-opened'); E.dispatch('bibi:opened-panel'); },
+        onclosed: () => { O.HTML.classList.remove('panel-opened'); E.dispatch('bibi:closed-panel'); }
+    });
+    E.add('bibi:commands:open-panel',   Panel.open);
+    E.add('bibi:commands:close-panel',  Panel.close);
+    E.add('bibi:commands:toggle-panel', Panel.toggle);
+    E.add('bibi:closes-utilities',      Panel.close);
+    /*
+    Panel.Labels = {
+        default: { default: `Opoen this Index`, ja: `この目次を開く`   },
+        active:  { default: `Close this Index`, ja: `この目次を閉じる` }
+    };
+    */
+    I.setFeedback(Panel, { StopPropagation: true });
+    Panel.addTapEventListener('tapped', () => E.dispatch('bibi:commands:toggle-panel'));
+    Panel.BookInfo            = Panel.appendChild(               sML.create('div', { id: 'bibi-panel-bookinfo'            }));
+    Panel.BookInfo.Cover      = Panel.BookInfo.appendChild(      sML.create('div', { id: 'bibi-panel-bookinfo-cover'      }));
+    Panel.BookInfo.Cover.Info = Panel.BookInfo.Cover.appendChild(sML.create('p',   { id: 'bibi-panel-bookinfo-cover-info' }));
+    const Opener = Panel.Opener = I.Menu.L.addButtonGroup({ Sticky: true }).addButton({
+        Type: 'toggle',
+        Labels: {
+            default: { default: `Open Index`,  ja: `目次を開く`   },
+            active:  { default: `Close Index`, ja: `目次を閉じる` }
+        },
+        Help: true,
+        Icon: `<span class="bibi-icon bibi-icon-toggle-panel">${ (Bars => { for(let i = 1; i <= 6; i++) Bars += '<span></span>'; return Bars; })('') }</span>`,
+        action: () => Panel.toggle()
+    });
+    E.add('bibi:opened-panel', () => I.setUIState(Opener, 'active'            ));
+    E.add('bibi:closed-panel', () => I.setUIState(Opener, ''                  ));
+    E.add('bibi:started',      () =>    sML.style(Opener, { display: 'block' }));
+    //sML.appendCSSRule('div#bibi-panel-bookinfo', 'height: calc(100% - ' + (O.Scrollbars.Height) + 'px);'); // Optimize to Scrollbar Size
+    E.dispatch('bibi:created-panel');
+}};
+
+
 I.Help = { create: () => {
     const Help = I.Help = O.Body.appendChild(sML.create('div', { id: 'bibi-help' }));
     Help.Message = Help.appendChild(sML.create('p', { className: 'hidden', id: 'bibi-help-message' }));
@@ -2650,21 +2662,23 @@ I.Help = { create: () => {
             Help.Timer_deactivate2 = setTimeout(() => Help.classList.remove('active'), 200);
         }, 100);
     };
+    /*
     sML.appendCSSRule([ // Optimize to Scrollbar Size
-        'html.view-paged div#bibi-help',
-        'html.view-horizontal div#bibi-help',
+        'html.appearance-horizontal div#bibi-help',
         'html.page-rtl.panel-opened div#bibi-help'
     ].join(', '), 'bottom: ' + (O.Scrollbars.Height) + 'px;');
+    */
 }};
 
 
 I.PoweredBy = { create: () => {
     const PoweredBy = I.PoweredBy = O.Body.appendChild(sML.create('div', { id: 'bibi-poweredby', innerHTML: `<p><a href="${ Bibi['href'] }" target="_blank" title="BiB/i | Official Website">BiB/i</a></p>` }));
+    /*
     sML.appendCSSRule([ // Optimize to Scrollbar Size
-        'html.view-paged div#bibi-poweredby',
-        'html.view-horizontal div#bibi-poweredby',
+        'html.appearance-horizontal div#bibi-poweredby',
         'html.page-rtl.panel-opened div#bibi-poweredby'
     ].join(', '), 'bottom: ' + (O.Scrollbars.Height) + 'px;');
+    */
 }};
 
 
@@ -3379,18 +3393,16 @@ I.Slider = { create: () => {
         Slider.resetThumbAndRailSize();
         Slider.progress();
     });
-    Slider.addEventListener('wheel', R.Main.listenWheel, { capture: true, passive: false });
+    if(!O.Touch) {
+        if(!sML.UA.Gecko) Slider.addEventListener('wheel', R.Main.listenWheel, { capture: true, passive: false });
+    }
     { // Optimize to Scrollbar Size
-        const _S = 'div#bibi-slider', _TB = '-thumb:before', _TA = '-thumb:after';
-        const _HS = 'html.appearance-horizontal ' + _S, _HSTB = _HS + _TB, _HSTA = _HS + _TA, _SH = O.Scrollbars.Height, _STH = Math.ceil(_SH / 2);
-        const _VS = 'html.appearance-vertical '   + _S, _VSTB = _VS + _TB, _VSTA = _VS + _TA, _SW = O.Scrollbars.Width,  _STW = Math.ceil(_SW / 2);
+        const _S = 'div#bibi-slider', _TB = '-thumb:before';
+        const _HS = 'html.appearance-horizontal ' + _S, _HSTB = _HS + _TB, _SH = O.Scrollbars.Height, _STH = Math.ceil(_SH / 2);
+        const _VS = 'html.appearance-vertical '   + _S, _VSTB = _VS + _TB, _SW = O.Scrollbars.Width,  _STW = Math.ceil(_SW / 2);
         const _getSliderThumbOffsetStyle = (Offset) => ['top', 'right', 'bottom', 'left'].reduce((Style, Dir) => Style + Dir + ': ' + (Offset * -1) + 'px; ', '').trim();
-        sML.appendCSSRule(_HS, 'height: ' + _SH + 'px;');
-        sML.appendCSSRule(_VS, 'width: '  + _SW + 'px;');
-        sML.appendCSSRule(_HSTB + ', ' + _HSTA, _getSliderThumbOffsetStyle(_STH));
-        sML.appendCSSRule(_VSTB + ', ' + _VSTA, _getSliderThumbOffsetStyle(_STW));
-        sML.appendCSSRule(_HSTB, 'border-radius: ' + (_STH / 2) + 'px; min-width: '  + _STH + 'px;');
-        sML.appendCSSRule(_VSTB, 'border-radius: ' + (_STW / 2) + 'px; min-height: ' + _STW + 'px;');
+        sML.appendCSSRule(_HS, 'height: ' + _SH + 'px;');  sML.appendCSSRule(_HSTB, _getSliderThumbOffsetStyle(_STH) + ' border-radius: ' + (_STH / 2) + 'px; min-width: '  + _STH + 'px;');
+        sML.appendCSSRule(_VS, 'width: '  + _SW + 'px;');  sML.appendCSSRule(_VSTB, _getSliderThumbOffsetStyle(_STW) + ' border-radius: ' + (_STW / 2) + 'px; min-height: ' + _STW + 'px;');
     }
     E.dispatch('bibi:created-slider');
 }};
@@ -3427,7 +3439,7 @@ I.Turner = { create: () => {
                     }
                     if(L.Opened && (
                         CurrentEdge.Page != BookEdgePage
-                        || (!CurrentEdge.IntersectionStatus.Contained && !CurrentEdge.IntersectionStatus[Edged])
+                        || (!CurrentEdge.PageIntersectionStatus.Contained && !CurrentEdge.PageIntersectionStatus[Edged])
                     )) {
                         switch(Par.Direction) {
                             case 'left': case  'right': return S.ARA == 'horizontal' ? 1 : -1;
@@ -3463,7 +3475,7 @@ I.Arrows = { create: () => { if(!S['use-arrows']) return;
         areAvailable: (BibiEvent) => {
             if(!L.Opened) return false;
             if(I.OpenedSubpanel) return false;
-            if(I.Menu.Panel && I.Menu.Panel.UIState == 'active') return false;
+            if(I.Panel && I.Panel.UIState == 'active') return false;
             //if(BibiEvent.Coord.Y < I.Menu.Height/* * 1.5*/) return false;
             if(S.RVM == 'paged') {
                 if(BibiEvent.Coord.Y > window.innerHeight - I.Slider.offsetHeight) return false;
@@ -3473,7 +3485,7 @@ I.Arrows = { create: () => { if(!S['use-arrows']) return;
                 else if(S.RVM == 'vertical'  ) { if(BibiEvent.Coord.X > window.innerWidth  - O.Scrollbars.Width)  return false; }
             }
             if(BibiEvent.Target.ownerDocument.documentElement == O.HTML) {
-                if(BibiEvent.Target == O.HTML || BibiEvent.Target == O.Body) return true;
+                if(BibiEvent.Target == O.HTML || BibiEvent.Target == O.Body || BibiEvent.Target == I.Menu) return true;
                 if(/^(bibi-main|bibi-arrow|bibi-help|bibi-poweredby)/.test(BibiEvent.Target.id)) return true;
                 if(/^(spread|item|page)( |-|$)/.test(BibiEvent.Target.className)) return true;
             } else {
@@ -4023,13 +4035,13 @@ I.observeTap = (Ele, Opt) => {
             E.add(Ele, 'bibi:' + EN, Eve => Fun.call(Ele, Eve));
             return Ele;
         };
-        Ele.onBibiTap = (On, Eve) => {
-            if(On) {
+        Ele.onBibiTap = (Eve, State) => {
+            if(Opt.PreventDefault)  Eve.preventDefault();
+            if(Opt.StopPropagation) Eve.stopPropagation();
+            if(State == 'down') {
                 clearTimeout(Ele.Timer_tap);
                 Ele.TouchStart = { Time: Date.now(), Event: Eve, Coord: O.getBibiEventCoord(Eve) };
                 Ele.Timer_tap = setTimeout(() => delete Ele.TouchStart, 333);
-                if(Opt.PreventDefault)  Eve.preventDefault();
-                if(Opt.StopPropagation) Eve.stopPropagation();
             } else {
                 if(Ele.TouchStart) {
                     if((Date.now() - Ele.TouchStart.Time) < 300) {
@@ -4041,12 +4053,10 @@ I.observeTap = (Ele, Opt) => {
                     }
                     delete Ele.TouchStart;
                 }
-                if(Opt.PreventDefault)  Eve.preventDefault();
-                if(Opt.StopPropagation) Eve.stopPropagation();
             }
         };
-        Ele.addEventListener(O['pointerdown'], Eve => Ele.onBibiTap(true,  Eve));
-        Ele.addEventListener(O['pointerup'],   Eve => Ele.onBibiTap(false, Eve));
+        Ele.addEventListener(O['pointerdown'], Eve => Ele.onBibiTap(Eve, 'down'));
+        Ele.addEventListener(O['pointerup'],   Eve => Ele.onBibiTap(Eve, 'up'  ));
     }
     return Ele;
 };
@@ -4414,7 +4424,7 @@ S.initialize = () => {
 
 
 S.update = (Settings) => {
-    const PrevBRL = S.BRL, PrevRVM = S.RVM, PrevPPD = S.PPD, PrevSLA = S.SLA, PrevSLD = S.SLD, PrevARD = S.ARD, PrevARA = S.ARA;
+    const PrevBRL = S.BRL, PrevRVM = S.RVM, PrevPPD = S.PPD, PrevSLA = S.SLA, PrevSLD = S.SLD, PrevARD = S.ARD, PrevARA = S.ARA, PrevNLD = S.NLD;
     if(typeof Settings == 'object') for(const Property in Settings) if(typeof S[Property] != 'function') S[Property] = Settings[Property];
     S.BRL = S['book-rendition-layout'] = B.Package.Metadata['rendition:layout'];
     S.BWM = S['book-writing-mode'] = B.WritingMode;
@@ -4430,9 +4440,10 @@ S.update = (Settings) => {
         case 'rl-tb': S.PPD = S['page-progression-direction'] = 'rtl', S.SLA = S['spread-layout-axis'] = (S.RVM == 'paged') ? 'horizontal' : S.RVM; break;
         default     : S.PPD = S['page-progression-direction'] = 'ltr', S.SLA = S['spread-layout-axis'] = (S.RVM == 'paged') ? 'horizontal' : S.RVM; break;
     }   else          S.PPD = S['page-progression-direction'] = B.PPD, S.SLA = S['spread-layout-axis'] = (S.RVM == 'paged') ? 'horizontal' : S.RVM;
-    S.SLD = S['spread-layout-direction']    = (S.SLA == 'vertical') ? 'ttb'        : S.PPD;
-    S.ARD = S['apparent-reading-direction'] = (S.RVM == 'vertical') ? 'ttb'        : S.PPD;
-    S.ARA = S['apparent-reading-axis']      = (S.RVM == 'paged'   ) ? 'horizontal' : S.RVM;
+    S.SLD = S['spread-layout-direction']     = (S.SLA == 'vertical') ? 'ttb'        : S.PPD;
+    S.ARD = S['apparent-reading-direction']  = (S.RVM == 'vertical') ? 'ttb'        : S.PPD;
+    S.ARA = S['apparent-reading-axis']       = (S.RVM == 'paged'   ) ? 'horizontal' : S.RVM;
+    S.NLD = S['navigation-layout-direction'] = (S['fix-nav-ttb'] || S.PPD != 'rtl') ? 'ttb' : 'rtl';
     if(PrevBRL != S.BRL) sML.replaceClass(O.HTML, 'book-'       + PrevBRL, 'book-'       + S.BRL);
     if(PrevRVM != S.RVM) sML.replaceClass(O.HTML, 'view-'       + PrevRVM, 'view-'       + S.RVM);
     if(PrevPPD != S.PPD) sML.replaceClass(O.HTML, 'page-'       + PrevPPD, 'page-'       + S.PPD);
@@ -4440,6 +4451,7 @@ S.update = (Settings) => {
     if(PrevSLD != S.SLD) sML.replaceClass(O.HTML, 'spread-'     + PrevSLD, 'spread-'     + S.SLD);
     if(PrevARD != S.ARD) sML.replaceClass(O.HTML, 'appearance-' + PrevARD, 'appearance-' + S.ARD);
     if(PrevARA != S.ARA) sML.replaceClass(O.HTML, 'appearance-' + PrevARA, 'appearance-' + S.ARA);
+    if(PrevNLD != S.NLD) sML.replaceClass(O.HTML, 'nav-'        + PrevNLD, 'nav-'        + S.NLD);
     C.update();
     E.dispatch('bibi:updated-settings', S);
 };
@@ -5026,8 +5038,7 @@ O.getBibiEventCoord = (Eve) => { const EventCoord = { X: 0, Y: 0 };
 };
 
 
-O.getOrigin = (Win) => {
-    const Loc = (Win ? Win : window).location;
+O.getOrigin = (Win = window) => { const Loc = Win.location;
     return Loc.origin || Loc.protocol + '//' + (Loc.host || Loc.hostname + (Loc.port ? ':' + Loc.port : ''));
 };
 
@@ -5073,6 +5084,7 @@ O.SettingTypes = {
         'allow-placeholders',
         'autostart',
         'autostart-embedded',
+        'fix-nav-ttb',
         'fix-reader-view-mode',
         'place-menubar-at-top',
         'single-page-always',

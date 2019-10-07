@@ -35,6 +35,7 @@ div#bibi-slider {
 		);
 		&:after { border-top-width: 1px; }
 	}
+	html.appearance-horizontal.panel-opened & { height: 0; }
 	html.appearance-vertical & {
 		@include offset(0, 0, 0, auto);
 		@include size(
@@ -43,6 +44,7 @@ div#bibi-slider {
 		);
 		&:after { border-left-width: 1px; }
 	}
+	html.appearance-vertical.panel-opened & { width: 0; }
 	html.slider-opened & {
 		overflow: visible;
 		// @____Bibi:Dress__('-') box-shadow: $Slider_BoxShadow__SliderOpened;
@@ -59,7 +61,9 @@ div#bibi-slider {
 	}
 	html.slider-sliding &,
 	html.busy & { transition: none; }
-	html.busy & { opacity: 0; }
+	html.waiting &,
+	html.busy &,
+	html.panel-opened & { display: none; }
 }
 
 
@@ -92,12 +96,12 @@ div#bibi-slider-thumb {
 		box-sizing: border-box;
 		position: absolute;
 		z-index: 10;
-		html.appearance-horizontal &, html.appearance-vertical & { @include offset($TEMPORARY__Scrollbar-Thumb_Size * -1); } // TO BE OVERWRITTEN
 		margin: auto;
 		// @____Bibi:Dress__('-') html.slider-opened       & { transition: $Slider_Transition__Open;  }
 		// @____Bibi:Dress__('-') html:not(.slider-opened) & { transition: $Slider_Transition__Close; }
 	}
 	&:before {
+		@include offset($TEMPORARY__Scrollbar-Thumb_Size * -1); // TO BE OVERWRITTEN
 		@include size(100%);
 		border-radius: $TEMPORARY__Scrollbar-Thumb_Size * 0.5; // TO BE OVERWRITTEN
 		html.appearance-horizontal & { min-width:  $TEMPORARY__Scrollbar-Thumb_Size; } // TO BE OVERWRITTEN
