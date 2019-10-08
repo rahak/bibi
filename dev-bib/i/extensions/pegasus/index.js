@@ -1,6 +1,7 @@
-const LSLD = (S['book'] && U['key']) ? new (require('lsld'))({ url: S['book'], key: U['key'] || '', worker: document.currentScript.src.replace(/[^\/]+$/, 'lsldw.js') }) : null;
-const LSZL = (S['book'] && !LSLD) ? new (require('./lszl'))({ url: S['book'], worker: document.currentScript.src.replace(/[^\/]+$/, 'lszlw.js') }) : null;
-//const LSDD = require('lsdd');
+//const DD = require('lsdd');
+const LD = !S['book'] ? null : U['key'] ?
+    new (require(  'lsld'))({ url: S['book'], key: U['key'], worker: new URL('lsldw.js', document.currentScript.src).href }):
+    new (require('./lszl'))({ url: S['book'],                worker: new URL('lszlw.js', document.currentScript.src).href });
 
 Bibi.x({
 
@@ -10,40 +11,28 @@ Bibi.x({
 
 })(function() {
 
-    const Log = `%cBibi: 🎠 rides on the %cPegasus %c(v${ this.version })` + (typeof LSDD == 'undefined' ? ` [${ LSLD ? '+' : '-'}]LD [-]DD [${ LSZL ? '+' : '-'}]ZL` : '');
+    const Log = `%cBibi: 🎠 rides on the %cPegasus %c(v${ this.version })` + ((typeof DD == 'undefined' || !DD) ? ` (Loader: ${ !LD ? '-' : LD.params.key ? 'LSLD' : 'LSZL' })` : '');
     console.log.apply(console, (sML.UA.Trident || sML.UA.EdgeHTML) ? [Log.replace(/%c/g, '')] : [Log].concat(O.log.NStyle, O.log.BStyle, O.log.NStyle));
 
-    if(LSLD) {
+    if(LD) {
         O.isToBeExtractedIfNecessary = () => true;
         O.retlieve = (Item) => {
             Item = O.item(Item);
-            return LSLD.getBuffer(Item.Path).then(ABuf => {
+            return LD.getBuffer(Item.Path).then(ABuf => {
                 if(O.isBin(Item)) Item.DataType = 'Blob', Item.Content = new Blob([ABuf], { type: Item['media-type'] });
                 else              Item.DataType = 'Text', Item.Content = new TextDecoder('utf-8').decode(new Uint8Array(ABuf));
                 return Item;
             }).catch(() => Promise.reject());
         };
-        O.cancelRetlieving = (Item) => { try { LSLD.abort(Item.Path); } catch(Err) {} };
-    } else if (LSZL) {
-        O.isToBeExtractedIfNecessary = () => true;
-        O.retlieve = (Item) => {
-            Item = O.item(Item);
-            return LSZL.getBuffer(Item.Path).then(ABuf => {
-                if(O.isBin(Item)) Item.DataType = 'Blob', Item.Content = new Blob([ABuf], { type: Item['media-type'] });
-                else              Item.DataType = 'Text', Item.Content = new TextDecoder('utf-8').decode(new Uint8Array(ABuf));
-                return Item;
-            }).catch(() => Promise.reject());
-        };
-        O.cancelRetlieving = (Item) => { try { LSLD.abort(Item.Path); } catch(Err) {} };
+        O.cancelRetlieving = (Item) => { try { LD.abort(Item.Path); } catch(Err) {} };
     }
 
-    if(typeof LSDD == 'undefined') return;
+    if(typeof DD == 'undefined') return;
 
     O.log = O.error = this.dummy = () => Promise.reject().catch(() => false);
-    this.error = console.error || function(EM) { throw EM; };
 
-    LSDD.setup(), LSDD.addHandler(() => {
-        I.note(`Error | エラー`, null);
+    DD.setup(), DD.addHandler(() => {
+        I.note(`Error | エラー`, null, 'ERROR');
         I.note = () => false;
         [R.Main, I.Veil].forEach(Ele => { Ele.style.transition = '.111s', Ele.style.opacity = 0; });
         setTimeout(() => {
@@ -62,7 +51,7 @@ Bibi.x({
             }
         }
         B.Package.Manifest.Items = B.Package.Spine.Items = R.Items = R.NonLinearItems = R.Spreads = R.Pages = [];
-        if(this.LSLD) for(const _ in this.LSLD) delete this.LSLD[_];
+        const Modules = [DD]; if(LD) Modules.push(LD); Modules.forEach($ => { for(const _ in $) delete $[_]; });
         setTimeout(() => {
             O.HTML.className = sML.Environments.concat('notifier-shown').join(' ');
             O.HTML.style.height = O.Body.style.height = '';
@@ -72,7 +61,7 @@ Bibi.x({
             });
             I.Veil.style.transition = '.333s', I.Veil.style.opacity = 1;
             Bibi = B = C = E = I = L = M = P = R = S = U = X = undefined;
-            this.error(`>>>> ${ ByeBye.toUpperCase() } <<<<`);
+            (console.error || (EM => { throw EM; }))(`>>>> ${ ByeBye.toUpperCase() } <<<<`);
         }, 333);
     });
 
