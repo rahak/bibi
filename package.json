@@ -1,6 +1,6 @@
 {
-  "name": "bibi",
-  "version": "1.0.0-pr",
+  "name": "pegasus",
+  "version": "0.8.6",
   "author": {
     "name": "Satoru MATSUSHIMA"
   },
@@ -26,8 +26,10 @@
     "develop+watch": "gulp clean:production && webpack --config webpack.config.js --progress --colors --mode development --watch",
     "make:distribution": "npm run build && gulp make:distribution",
     "make:dress-template": "gulp make:dress-template",
+    "make:lszl": "cd packages/lszl && rm -rf dist && npm i && npm run build --production && cp dist/*.js ../../dev-bib/i/extensions/pegasus",
     "serve": "browser-sync start --config bs-config.js",
-    "start": "npm run develop+watch"
+    "start": "npm run develop+watch",
+    "release": "npm run make:distribution && npx release-it --ci"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
@@ -78,5 +80,10 @@
     "string.padstart": "^0.1.1",
     "text-encoding-utf-8": "^1.0.2",
     "url-polyfill": "^1.1.7"
-  }
+  },
+  "private": true,
+  "bundledDependencies": [
+    "lsld",
+    "lsdd"
+  ]
 }
