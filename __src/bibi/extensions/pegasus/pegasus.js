@@ -1,0 +1,91 @@
+//const DD = require('lsdd');
+const LD = !S['book'] ? null : U['key'] ?
+    new (require(  'lsld'))({ url: S['book'], key: U['key'], worker: new URL('lsldw.js', document.currentScript.src).href }):
+    new (require('./lszl'))({ url: S['book'],                worker: new URL('lszlw.js', document.currentScript.src).href });
+
+Bibi.x({
+
+    id: 'Pegasus',
+    author: 'Lunascape Corporation',
+    version: '____Pegasus-Version____'
+
+})(function() {
+
+    const Log = `%cBibi: 🎠 rides on the %cPegasus %c(v${ this.version })` + ((typeof DD == 'undefined' || !DD) ? ` (Loader: ${ !LD ? '-' : LD.params.key ? 'LSLD' : 'LSZL' })` : '');
+    console.log.apply(console, (sML.UA.Trident || sML.UA.EdgeHTML) ? [Log.replace(/%c/g, '')] : [Log].concat(O.log.NStyle, O.log.BStyle, O.log.NStyle));
+
+    if(LD) {
+        O.isToBeExtractedIfNecessary = () => true;
+        O.retlieve = (Item) => {
+            Item = O.item(Item);
+            return LD.getBuffer(Item.Path).then(ABuf => {
+                if(O.isBin(Item)) Item.DataType = 'Blob', Item.Content = new Blob([ABuf], { type: Item['media-type'] });
+                else              Item.DataType = 'Text', Item.Content = new TextDecoder('utf-8').decode(new Uint8Array(ABuf));
+                return Item;
+            }).catch(() => Promise.reject());
+        };
+        O.cancelRetlieving = (Item) => { try { LD.abort(Item.Path); } catch(Err) {} };
+    }
+
+    if(typeof DD == 'undefined') return;
+
+    O.log = O.error = this.dummy = () => Promise.reject().catch(() => false);
+
+    DD.setup(), DD.addHandler(() => {
+        I.note(`Error | エラー`, null, 'ERROR');
+        I.note = () => false;
+        [R.Main, I.Veil].forEach(Ele => { Ele.style.transition = '.111s', Ele.style.opacity = 0; });
+        setTimeout(() => {
+            sML.forEach(O.HTML.querySelectorAll('body>*'))(Ele => { if(Ele != I.Veil && Ele != I.Notifier) O.Body.removeChild(Ele); });
+            R.Main.innerHTML = R.Main.Book.innerHTML = '';
+        }, 222);
+        [Bibi, L, E, S].forEach(Obj => { for(const _ in Obj) if(typeof Obj[_] == 'function') Obj[_] = this.dummy; });
+        for(const _ in R) if(/^(on|reset|render|layOut|turn)/.test(_) && typeof R[_] == 'function') R[_] = this.dummy;
+        for(const Path in B.Package.Manifest.Items) {
+            const Item = O.item({ Path: Path });
+            ['URI', 'BlobURL', 'src'].forEach(_ => URL.revokeObjectURL(Item[_]));
+            Item.Path = Item.Content = Item.URI = Item.BlobURL = Item.src = Item.id = '';
+            if(Item.tagName) {
+                if(Item.parentElement) Item.parentElement.removeChild(Item);
+                Item.id = Item.className = Item.style = '';
+            }
+        }
+        B.Package.Manifest.Items = B.Package.Spine.Items = R.Items = R.NonLinearItems = R.Spreads = R.Pages = [];
+        const Modules = [DD]; if(LD) Modules.push(LD); Modules.forEach($ => { for(const _ in $) delete $[_]; });
+        setTimeout(() => {
+            O.HTML.className = sML.Environments.concat('notifier-shown').join(' ');
+            O.HTML.style.height = O.Body.style.height = '';
+            const ByeBye = I.Veil.byebye({
+                'en': `<span>Please Close DevTool</span> <span>and Reload Your Browser.</span>`,
+                'ja': `<span>開発ツールを閉じて</span><span>再読み込みしてください。</span>`
+            });
+            I.Veil.style.transition = '.333s', I.Veil.style.opacity = 1;
+            Bibi = B = C = E = I = L = M = P = R = S = U = X = undefined;
+            (console.error || (EM => { throw EM; }))(`>>>> ${ ByeBye.toUpperCase() } <<<<`);
+        }, 333);
+    });
+
+    ['select-elements', 'save-images', 'use-contextmenu'].forEach(Par => this[Par] = 'prevent');
+    const VPs = ['-webkit-', '-moz-', '-ms-', ''], unaccessibilize = (Item) => {
+        if(this['select-elements'] == 'prevent') {
+            VPs.forEach(Prefix => {
+                ['user-select', 'user-drag'].forEach(Property => Item.Body.style[Prefix + Property] = 'none');
+            });
+        }
+        if(this['save-images'] == 'prevent') sML.forEach(Item.Body.querySelectorAll('img, svg, image'))(Img => {
+            VPs.forEach(Prefix => {
+                ['user-select', 'user-drag'].forEach(Property => Img.style[Prefix + Property] = 'none');
+                if(O.Touch) Img.style[Prefix + 'pointer-events'] = 'none';
+            });
+            Img.draggable = false;
+            Img.addEventListener('contextmenu', O.preventDefault);
+        });
+        if(this['use-contextmenu'] == 'prevent') {
+            Item.contentDocument.addEventListener('contextmenu', O.preventDefault);
+        }
+    };
+    unaccessibilize(O), E.bind('bibi:postprocessed-item', unaccessibilize);
+
+})(function() {
+})(function() {
+});
