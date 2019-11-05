@@ -172,7 +172,7 @@ module.exports = (env, argv) => {
             }
         }));
         for(const N in Bibi.Banners) if(N) Config.plugins.push(new Webpack.BannerPlugin({ test: new RegExp(N.replace(/([\/\.])/g, '\\$1') + '$'), banner: Bibi.Banners[N], raw: true }));
-        Config.plugins.push(new Webpack.BannerPlugin({ test: /\/pegasus\/pegasus\.js$/, banner: require(Bibi.SRC + '/bibi/extensions/pegasus/_banner.js').trim(), raw: true }));
+        Config.plugins.push(new Webpack.BannerPlugin({ test: /\/pegasus\/pegasus\.js$/, banner: require('./' + Bibi.SRC + '/bibi/extensions/pegasus/_banner.js').trim(), raw: true }));
         Config.plugins.push(new CopyPlugin([
             { from: 'LICENSE',   to: './' + Bibi.DIST + '/bibi' },
             { from: 'README.md', to: './' + Bibi.DIST + '/bibi' }
