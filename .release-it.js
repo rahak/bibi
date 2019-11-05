@@ -1,6 +1,6 @@
 const package = require('./package.json');
 const version = 'v' + package.version;
-const artifact = 'archives/' + package.name + '-' + version + '.zip';
+const artifact = '__dist/' + package.name + '-' + version + '.zip';
 
 module.exports = {
     git: {
