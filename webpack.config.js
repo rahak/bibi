@@ -31,20 +31,20 @@ const Config = {
     stats: 'errors-warnings',
     performance: { maxEntrypointSize: 1000000, maxAssetSize: 1000000, hints: false  },
     optimization: { minimizer: [] },
-    entry: ((Es, Ns) => { Ns.forEach(N => Es[Bibi.DIST + '/bibi/' + N.replace(/\.js$/, '')] = __dirname + '/' + Bibi.SRC + '/bibi/' + N.replace(/\.css$/, '.scss')); return Es; })({}, [
-        'and/jo.js',
-        'extensions/analytics.js',
-        'extensions/epubcfi.js',
-        'extensions/extractor/at-once.js',
-        'extensions/pegasus/pegasus.js',
-        'extensions/unaccessibilizer.js',
-        'extensions/zine.js',
-        'resources/polyfills/bundle.js',
-        'resources/polyfills/encoding.js',
-        'resources/polyfills/intersection-observer.js',
-        'resources/scripts/bibi.js',
-        'resources/styles/bibi.css'
-    ].concat(Dresses['custom-made'].map(D => 'wardrobe/' + D + '/bibi.dress.css'))),
+    entry: ((Es, Ns) => { Ns.forEach(N => Es[Bibi.DIST + '/' + N.replace(/\.js$/, '')] = __dirname + '/' + Bibi.SRC + '/' + N.replace(/\.css$/, '.scss')); return Es; })({}, [
+        'bibi/and/jo.js',
+        'bibi/extensions/analytics.js',
+        'bibi/extensions/epubcfi.js',
+        'bibi/extensions/extractor/at-once.js',
+        'bibi/extensions/pegasus/pegasus.js',
+        'bibi/extensions/unaccessibilizer.js',
+        'bibi/extensions/zine.js',
+        'bibi/resources/polyfills/bundle.js',
+        'bibi/resources/polyfills/encoding.js',
+        'bibi/resources/polyfills/intersection-observer.js',
+        'bibi/resources/scripts/bibi.js',
+        'bibi/resources/styles/bibi.css'
+    ].concat(Dresses['custom-made'].map(D => 'bibi/wardrobe/' + D + '/bibi.dress.css'))),
     output: { path: __dirname, filename: '[name].js' },
     plugins: [
         new StringReplacePlugin(),
@@ -150,12 +150,13 @@ module.exports = (env, argv) => {
             { loader: 'url-loader' }
         ]
     });
-    (Param => Config.plugins.push(new CopyPlugin(Param.From.map(From => ({ from: From, to: Param.To })), { context: Param.Context })))({
-        Context: './' + Bibi.SRC + '/bibi', To: './' + Bibi.DIST + '/bibi', From: [
-            './*.html',
-            './presets/**'
-        ].concat(Dresses['ready-made'].map(D => './wardrobe/' + D + '/**'))
-    });
+    Config.plugins.push(new CopyPlugin([
+        'bibi/*.html',
+        'bibi/presets/**'
+    ].concat(Dresses['ready-made'].map(D => 'bibi/wardrobe/' + D + '/**')).map(N => ({ from: N, to: Bibi.DIST })), { context: './' + Bibi.SRC }));
+    if(Bibi.KeepBackCompat) Config.plugins.push(new CopyPlugin([
+        'bib/**'
+    ].map(N => ({ from: N, to: Bibi.DIST })), { context: './' + Bibi.SRCBC }));
     if(Config.mode === 'production') {
         Config.optimization.minimizer.push(new TerserPlugin({
             cache: true,

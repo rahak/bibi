@@ -15,10 +15,12 @@ const Bibi = {
     'homepage': 'https://bibi.epub.link or https://github.com/satorumurmur/bibi'
 };
 
+Bibi.KeepBackCompat = false;
+
 // =============================================================================================================================
 
 const _banner = (Name, Credit, Extra, Mark) => '/*!' + `
- *` + (!Mark ? '' : `                                                                                                                          ${ Mark }`) + `
+ *` + (!Mark ? '' : `                                                                                                                          (℠)`) + `
  *  # ${ Name }
  *` + (!Credit ? '' : (Credit == 'default' ? `
  *  * Copyright (c) ${ Bibi.author.name } - ${ Bibi.homepage }
@@ -33,14 +35,14 @@ Bibi.Banners = {
 '/bibi.js': _banner(`Bibi | EPUB Reader on your website.`, 'default', `
  *  * Including:
  *      - sML.js ... Copyright (c) Satoru MATSUSHIMA - https://github.com/satorumurmur/sML (Licensed under the MIT License.)
-`, '(℠)'),
+`, true),
 
 // -----------------------------------------------------------------------------------------------------------------------------
 
 '/bibi.css': '@charset "utf-8";\n' + _banner(`Bibi Style`, 'default', `
  *  * Including:
  *      - Material Icons ... Copyright (c) Material Design Authors / Google Inc. - https://material.io/icons/ (Licensed under the Apache License version 2.0.)
-`, '(℠)'),
+`, true),
 
 // -----------------------------------------------------------------------------------------------------------------------------
 
@@ -48,7 +50,7 @@ Bibi.Banners = {
  *  * Base Design:
  *      - Copyright (c) ${ Bibi.author.name } - ${ Bibi.homepage }
  *      - Licensed under the MIT License. - https://opensource.org/licenses/mit-license.php
-`, null, '(℠)'),
+`, null, true),
 
 // -----------------------------------------------------------------------------------------------------------------------------
 
@@ -81,20 +83,15 @@ Bibi.Banners = {
 
 // -----------------------------------------------------------------------------------------------------------------------------
 
-'/jo.js': _banner(`Jo | Partner of Bibi who embeds Bibi frame in webpage.`, 'default', null, '(℠)'),
+'/jo.js': _banner(`Jo | Partner of Bibi who embeds Bibi frame in webpage.`, 'default', null, true),
 
 // -----------------------------------------------------------------------------------------------------------------------------
 
-'/extensions/analytics.js': _banner(`Bibi Extension: Analytics`, 'default', null, '(℠)'),
+'/extensions/analytics.js': _banner(`Bibi Extension: Analytics`, 'default', null, true),
 
 // -----------------------------------------------------------------------------------------------------------------------------
 
-'/extensions/emx/index.js': _banner(`Bibi Extension: EMX`, 'default', null, '(℠)'),
-'/extensions/emx/styles.css': '@charset "utf-8";\n' + _banner(`Bibi Extension: EMX`, 'default', null, '(℠)'),
-
-// -----------------------------------------------------------------------------------------------------------------------------
-
-'/extensions/epubcfi.js': _banner(`Bibi Extension: EPUBCFI`, 'default', null, '(℠)'),
+'/extensions/epubcfi.js': _banner(`Bibi Extension: EPUBCFI`, 'default', null, true),
 
 // -----------------------------------------------------------------------------------------------------------------------------
 
@@ -102,7 +99,7 @@ Bibi.Banners = {
  *  * Including:
  *      - JSZip      ... Copyright (c) Stuart Knightley - https://stuk.github.io/jszip       (Dual licensed under the MIT License or the GPLv3.)
  *      - JSZipUtils ... Copyright (c) Stuart Knightley - https://stuk.github.io/jszip-utils (Dual licensed under the MIT License or the GPLv3.)
-`, '(℠)'),
+`, true),
 
 // -----------------------------------------------------------------------------------------------------------------------------
 
@@ -116,7 +113,7 @@ Bibi.Banners = {
 '/extensions/zine.js': _banner('Bibi Extension: Zine', 'default', `
  *  * Including:
  *      - JS-YAML ... Copyright (c) Vitaly Puzrin - https://nodeca.github.io/js-yaml (Licensed under the MIT License.)
-`, '(℠)'),
+`, true),
 
 // -----------------------------------------------------------------------------------------------------------------------------
 
@@ -124,7 +121,7 @@ Bibi.Banners = {
 
 // =============================================================================================================================
 
-Bibi.SRC = '__src', Bibi.DIST = '__dist';
+Bibi.ARCHIVE = '__dist', Bibi.DIST = '__dist', Bibi.SRC = '__src', Bibi.SRCBC = '__src__back-compat';
 
 // =============================================================================================================================
 
