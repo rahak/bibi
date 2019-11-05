@@ -21,7 +21,8 @@ jobs:
       - run: git tag v$(node -pe "require('./package.json').version")
       - run: git push origin v$(node -pe "require('./package.json').version")
       - run: npm install
-      - run: npm run release
+      - run: npm run make:distribution-package
+      - run: npx release-it --ci
 
 workflows:
   build:

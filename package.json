@@ -30,8 +30,7 @@
     "make:dress-template": "gulp make:dress-template",
     "postinstall": "gulp initialize && npm run build",
     "serve": "browser-sync start --config bs-config.js",
-    "start": "npm run develop+watch",
-    "release": "npm run make:distribution && npx release-it --ci"
+    "start": "npm run develop+watch"
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",
