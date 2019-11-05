@@ -51,7 +51,6 @@ const Package = JSON.parse(fs.readFileSync('package.json')), Bibi = require('./b
             Bibi.DIST
         ));
     });
-    gulp.task('make:distribution', gulp.series(
 }
 
 const setPackageBuilderTasks = (Opt) => {
